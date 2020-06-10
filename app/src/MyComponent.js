@@ -124,6 +124,28 @@ export default ({ drizzle, drizzleState }) => {
           method="singleDD"
         />
       </div>
+
+      <div className="section">
+        <h2>SimpleStorage A</h2>
+        <p>
+          This shows a simple ContractData component with no arguments, along
+          with a form to set its value.
+        </p>
+        <p>
+          <strong>Stored Value: </strong>
+          <ContractData
+            drizzle={drizzle}
+            drizzleState={drizzleState}
+            contract="SimpleStorage"
+            method="storedData"
+          />
+        </p>
+        <ContractForm drizzle={drizzle} contract="SimpleStorageA" method="transfer" />
+      </div>
+
+
+
+
     </div>
   );
 };
