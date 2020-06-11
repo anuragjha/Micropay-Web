@@ -45,7 +45,7 @@ export default ({ drizzle, drizzleState }) => {
         <ContractForm drizzle={drizzle} contract="SimpleStorage" method="set" />
       </div>
 
-      <div className="section">
+      {/* <div className="section">
         <h2>TutorialToken</h2>
         <p>
           Here we have a form with custom, friendly labels. Also note the token
@@ -87,7 +87,7 @@ export default ({ drizzle, drizzleState }) => {
           method="transfer"
           labels={["To Address", "Amount to Send"]}
         />
-      </div>
+      </div> */}
 
       <div className="section">
         <h2>ComplexStorage</h2>
@@ -126,7 +126,7 @@ export default ({ drizzle, drizzleState }) => {
       </div>
 
       <div className="section">
-        <h2>SimpleStorage A</h2>
+        <h2>Sending Ether</h2>
         <p>
           This shows a simple ContractData component with no arguments, along
           with a form to set its value.
@@ -140,7 +140,7 @@ export default ({ drizzle, drizzleState }) => {
             method="storedData"
           />
         </p>
-        <ContractForm drizzle={drizzle} contract="SimpleStorageA" method="transfer" />
+        <ContractForm drizzle={drizzle} contract="SendEther" method="sendViaCall" />
       </div>
 
 

@@ -1,44 +1,72 @@
-pragma solidity >=0.4.24 <0.7.0;
+pragma solidity >=0.6.0 <0.7.0;
 
 contract PaymentChannel {
-    address owner = msg.sender;
+    address payable public sender;      // The account sending payments.
+    address payable public recipient;   // The account receiving the payments.
+    uint256 public expiration;  // Timeout in case the recipient never closes.
 
-    mapping(uint256 => bool) usedNonces;
-
-    constructor() public payable {}
-
-    function claimPayment(uint256 amount, uint256 nonce, bytes memory signature) public {
-        require(!usedNonces[nonce]);
-        usedNonces[nonce] = true;
-
-        // this recreates the message that was signed on the client
-        bytes32 message = prefixed(keccak256(abi.encodePacked(msg.sender, amount, nonce, this)));
-
-        require(recoverSigner(message, signature) == owner);
-
-        msg.sender.transfer(amount);
+    constructor (address payable _recipient, uint256 duration)
+        public
+        payable
+    {
+        sender = msg.sender;
+        recipient = _recipient;
+        expiration = now + duration;
     }
 
-    /// destroy the contract and reclaim the leftover funds.
-    function kill() public {
-        require(msg.sender == owner);
-        selfdestruct(msg.sender);
+    /// the recipient can close the channel at any time by presenting a
+    /// signed amount from the sender. the recipient will be sent that amount,
+    /// and the remainder will go back to the sender
+    function close(uint256 amount, bytes memory signature) public {
+        require(msg.sender == recipient);
+        require(isValidSignature(amount, signature));
+
+        recipient.transfer(amount);
+        selfdestruct(sender);
     }
 
-    /// signature methods.
+    /// the sender can extend the expiration at any time
+    function extend(uint256 newExpiration) public {
+        require(msg.sender == sender);
+        require(newExpiration > expiration);
+
+        expiration = newExpiration;
+    }
+
+    /// if the timeout is reached without the recipient closing the channel,
+    /// then the Ether is released back to the sender.
+    function claimTimeout() public {
+        require(now >= expiration);
+        selfdestruct(sender);
+    }
+
+    function isValidSignature(uint256 amount, bytes memory signature)
+        internal
+        view
+        returns (bool)
+    {
+        bytes32 message = prefixed(keccak256(abi.encodePacked(this, amount)));
+
+        // check that the signature is from the payment sender
+        return recoverSigner(message, signature) == sender;
+    }
+
+    /// All functions below this are just taken from the chapter
+    /// 'creating and verifying signatures' chapter.
+
     function splitSignature(bytes memory sig)
-    internal
-    pure
-    returns (uint8 v, bytes32 r, bytes32 s)
+        internal
+        pure
+        returns (uint8 v, bytes32 r, bytes32 s)
     {
         require(sig.length == 65);
 
         assembly {
-        // first 32 bytes, after the length prefix.
+            // first 32 bytes, after the length prefix
             r := mload(add(sig, 32))
-        // second 32 bytes.
+            // second 32 bytes
             s := mload(add(sig, 64))
-        // final byte (first byte of the next 32 bytes).
+            // final byte (first byte of the next 32 bytes)
             v := byte(0, mload(add(sig, 96)))
         }
 
@@ -46,9 +74,9 @@ contract PaymentChannel {
     }
 
     function recoverSigner(bytes32 message, bytes memory sig)
-    internal
-    pure
-    returns (address)
+        internal
+        pure
+        returns (address)
     {
         (uint8 v, bytes32 r, bytes32 s) = splitSignature(sig);
 
@@ -60,71 +88,3 @@ contract PaymentChannel {
         return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
     }
 }
-
-//import "@openzeppelin/contracts/math/SafeMath.sol";
-//import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-//
-////import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.0.0/contracts/math/SafeMath.sol";
-////import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.0.0/contracts/cryptography/ECDSA.sol";
-////import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.0.0/contracts/utils/ReentrancyGuard.sol";
-//
-//contract PaymentChannel {
-//    using SafeMath for uint;
-//    using ECDSA for bytes32;
-//
-//    address payable public payer;
-//    address payable public payee;
-//    uint public expiresAt;
-//
-//    /// Open payment channel
-//    constructor(address payable _payee, uint _duration)
-//    public
-//    payable {
-//        require(_duration > 0, "Duration must be > 0");
-//
-//        payer = msg.sender;
-//        payee = _payee;
-//        expiresAt = now + duration;
-//    }
-//
-//    /// Verifies payer signature
-//    function verify(bytes memory _signature, address _payer,
-//        address _contract, uint _payeeBalance)
-//    public
-//    pure
-//    returns (bool) {
-//        // sign with address of this contract to protect against replay attack
-//        // on other contracts
-//        return keccak256(abi.encodePacked(_contract, _payeeBalance))
-//            .toEthSignedMessageHash()
-//            .recover(_signature) == _payer;
-//    }
-//
-//    /// Modifier to check signature
-//    modifier checkSignature(bytes memory _signature, uint _payeeBalance) {
-//        require(
-//            verify(_signature, payer, address(this), _payeeBalance),
-//            "Invalid signature"
-//        );
-//        _;
-//    }
-//
-//    function close(uint _payeeBalance, bytes memory _signature)
-//    public
-//    nonReentrant
-//    checkSignature(_signature, _payeeBalance) {
-//        require(msg.sender == payee, "Not Payee");
-//
-//        (bool sent, ) = payee.call.value(_payeeBalance)("");
-//        require(sent, "Failed to send Ether");
-//
-//        selfdestruct(payer);
-//    }
-//
-//    function kill() public {
-//        require(msg.sender == payer, "Not payer");
-//        require(block.timestamp >= expiresAt, "Channel not expired");
-//        selfdistruct(payer);
-//    }
-//
-//}

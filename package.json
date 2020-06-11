@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bridge": "./node_modules/.bin/ethereum-bridge -a 9 -H 127.0.0.1 -p 8545 --dev",
+    "chain": "ganache-cli -p 8545 --defaultBalanceEther 10000 --db ./ganache/"
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,9 @@
   },
   "homepage": "https://github.com/truffle-box/drizzle-box#readme",
   "dependencies": {
-    "@openzeppelin/contracts": "^2.4.0"
+    "@chainlink/contracts": "0.0.4",
+    "@openzeppelin/contracts": "^2.4.0",
+    "ethereum-bridge": "^0.6.2",
+    "solc": "^0.6.9"
   }
 }
