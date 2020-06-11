@@ -37,3 +37,15 @@ Run the command from inside the `app` directory. Also, compile the contracts bef
  Run the build script from inside `app` directory. A production build will be in the `app/build` folder.
  
     % npm run build
+
+#### 9. Integrating Provable
+Use Etherum bridge to connect to local instance of blockchain (https://github.com/provable-things/ethereum-bridge)
+Install ethereum-bridge:
+
+    % npm install -g ethereum-bridge
+
+Activate Provable:
+
+    % ethereum-bridge -H 127.0.0.1:8545 -a 1
+
+The above command, will allow to deploy contracts using the account 1 found on the 127.0.0.1:8545 node
