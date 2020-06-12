@@ -8,9 +8,6 @@ contract ApiFactory {
 
     mapping(string => ApiInfo) ApiStore;
     uint apiStoreCount;
-    
-    // to store usage of apis by the  users (user address to ApiInfo address to Usage/)
-    // mapping(address => mapping(address => Usage)) UsageStore;
 
     // function create(address _owner, string memory _name, string memory _uri, uint _cost) public {
     //     // if (ApiStore[_name].owner() ==  address(0x0)) { //todo: find a good way to check for key
@@ -32,7 +29,7 @@ contract ApiFactory {
         // if (keccak256(abi.encodePacked((ApiStore[_name].name))) == keccak256(abi.encodePacked(("")))) {
             ApiInfo api = (new ApiInfo).value(msg.value)(_owner, _name, _uri, _cost);
             api.setContractAddress(address(api));
-            api.setProvableAddress(address(new ProvableInfo()));
+            // api.setProvableAddress(address(new ProvableInfo()));
             ApiStore[_name] = api;
             apiStoreCount++;
             emit print("API added");
@@ -46,8 +43,10 @@ contract ApiFactory {
     function getApiInfo(address _user, string memory _name) public view returns (address contractAddress, address provableAddress, address owner, 
     string memory name, uint cost, uint api_balance, uint provable_balance) {
         ApiInfo api = ApiStore[_name];
-        return (api.contractAddress(), api.provableAddress(), api.owner(), api.name(), api.cost(), 
-            address(api.contractAddress()).balance, address(api.provableAddress()).balance);
+        // address paddr = api.userStore[_user];
+        // return (api.contractAddress(), api.userStore(_user), api.owner(), api.name(), api.cost(), 
+        //     address(api.contractAddress()).balance, address(api.userStore(_user)).balance);
+        return api.getApiInfo(_user);
     }
     
     function getApiStoreCount() public view returns(uint) {
@@ -64,31 +63,33 @@ contract ApiFactory {
     //     return ApiStore[_name].run(_user);
     // }
     
-    function sendViaCall(address payable _to) public payable {
+    function sendEther(address payable _to) public payable {
         // Call returns a boolean value indicating success or failure.
         // This is the current recommended method to use.
         (bool sent, bytes memory data) = _to.call.value(msg.value)("");
         require(sent, "Failed to send Ether");
     }
     
-    function run(address _user, string memory _name) public payable returns(string memory) {
+    function run(address payable _user, string memory _name) public payable returns(string memory) {
         ApiInfo ai = ApiStore[_name];
-        address payable  pa = ai.provableAddress();
-        ProvableInfo pi = ProvableInfo(pa);
-        return pi.run(_user);
+        // address payable  pa = ai.provableAddress();
+        // ProvableInfo pi = ProvableInfo(pa);
+        // return pi.run(_user);
+        return ai.run(_user);
     }
 }
 
 contract ApiInfo {
     address payable public contractAddress;
-    address payable public provableAddress;
+    // address payable public provableAddress;
+    mapping( address => address payable) public  userStore; // user address => provable address
     
     address public owner;
     string public name;
     string uri;
     uint public cost;
     
-    mapping(address => uint) ApiStore;
+
 
     constructor(address _owner, string memory _name, string memory _uri, uint _cost) public payable {
         owner = _owner;
@@ -107,12 +108,21 @@ contract ApiInfo {
         contractAddress = _address;
     }
     
-    function setProvableAddress(address payable _address) public {
-        provableAddress = _address;
+    function setProvableAddress(address payable _user) public {
+        if (userStore[_user] == address(0x0)) {
+            userStore[_user] = address(new ProvableInfo()); // todo: if user address exist , use existing Provable Info
+        }
+    }
+    
+    function getApiInfo(address _user) public view returns (address _contractAddress, address _provableAddress, address _owner, 
+    string memory _name, uint _cost, uint _api_balance, uint _provable_balance) {
+        address paddr = userStore[_user];
+        return (contractAddress, paddr, owner, name, cost, contractAddress.balance, paddr.balance);
     }
     
     function run(address payable _user) public returns(string memory) {
-        ProvableInfo pi = ProvableInfo(provableAddress);
+        setProvableAddress(_user);
+        ProvableInfo pi = ProvableInfo(userStore[_user]);
         return pi.run(_user);
         // return ("running uri ...");
     }
