@@ -5,14 +5,14 @@ import logo from "./logo.png";
 const { AccountData, ContractData, ContractForm } = newContextComponents;
 
 export default ({ drizzle, drizzleState }) => {
-  // destructure drizzle and drizzleState from props
+  // structure drizzle and drizzleState from props
   return (
     <div className="App">
       <div>
         <img src={logo} alt="drizzle-logo" />
-        <h1>Drizzle Examples</h1>
+        <h1>Micro Pay</h1>
         <p>
-          Examples of how to get started with Drizzle in various situations.
+          Marketplace for APIs
         </p>
       </div>
 
@@ -27,7 +27,7 @@ export default ({ drizzle, drizzleState }) => {
         />
       </div>
 
-      <div className="section">
+      {/*<div className="section">
         <h2>SimpleStorage</h2>
         <p>
           This shows a simple ContractData component with no arguments, along
@@ -43,7 +43,7 @@ export default ({ drizzle, drizzleState }) => {
           />
         </p>
         <ContractForm drizzle={drizzle} contract="SimpleStorage" method="set" />
-      </div>
+      </div>*/}
 
       {/* <div className="section">
         <h2>TutorialToken</h2>
@@ -89,7 +89,7 @@ export default ({ drizzle, drizzleState }) => {
         />
       </div> */}
 
-      <div className="section">
+      {/*<div className="section">
         <h2>ComplexStorage</h2>
         <p>
           Finally this contract shows data types with additional considerations.
@@ -123,9 +123,9 @@ export default ({ drizzle, drizzleState }) => {
           contract="ComplexStorage"
           method="singleDD"
         />
-      </div>
+      </div>*/}
 
-      <div className="section">
+      {/*<div className="section">
         <h2>Sending Ether</h2>
         <p>
           This shows a simple ContractData component with no arguments, along
@@ -141,7 +141,7 @@ export default ({ drizzle, drizzleState }) => {
           />
         </p>
         <ContractForm drizzle={drizzle} contract="SendEther" method="sendViaCall" />
-      </div>
+      </div>*/}
 
 
 

@@ -7,8 +7,8 @@ const ComplexStorage = artifacts.require("ComplexStorage");
 //const ApiUse = artifacts.require("ApiUse");
 
 //const PaymentChannel = artifacts.require("PaymentChannel");
-//const ReceiveEther = artifacts.require("ReceiveEther");
-//const SendEther = artifacts.require("SendEther");
+const ReceiveEther = artifacts.require("ReceiveEther");
+const SendEther = artifacts.require("SendEther");
 
 module.exports = function(deployer) {
   deployer.deploy(SimpleStorage);
@@ -21,5 +21,5 @@ module.exports = function(deployer) {
 
 //  deployer.deploy(PaymentChannel);
 //    deployer.deploy(ReceiveEther);
-//    deployer.deploy(SendEther);
+    deployer.deploy(SendEther);
 };

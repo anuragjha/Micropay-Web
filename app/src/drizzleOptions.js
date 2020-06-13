@@ -9,14 +9,14 @@ import SimpleStorage from "./contracts/SimpleStorage.json";
 
 //import PaymentChannel from "./contracts/PaymentChannel.json";
 //import ReceiveEther from "./contracts/ReceiveEther.json";
-//import SendEther from "./contracts/SendEther.json";
+import SendEther from "./contracts/SendEther.json";
 
 const options = {
   web3: {
     block: false,
     customProvider: new Web3("ws://127.0.0.1:8545"),
   },
-  contracts: [SimpleStorage, ComplexStorage],
+  contracts: [SimpleStorage, ComplexStorage, SendEther],
   events: {
     SimpleStorage: ["StorageSet"]
   },

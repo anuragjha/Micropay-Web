@@ -3,6 +3,7 @@ pragma solidity > 0.6.0 < 0.7.0;
 import "github.com/provable-things/ethereum-api/provableAPI_0.6.sol";
 
 
+
 contract ApiFactory {
     event print(string _message);
 
@@ -63,11 +64,17 @@ contract ApiFactory {
     //     return ApiStore[_name].run(_user);
     // }
 
-    function sendEther(address payable _to) public payable {
-        // Call returns a boolean value indicating success or failure.
-        // This is the current recommended method to use.
-        (bool sent, bytes memory data) = _to.call.value(msg.value)("");
-        require(sent, "Failed to send Ether");
+    // function sendEther(address payable _to) public payable {
+    //     // Call returns a boolean value indicating success or failure.
+    //     // This is the current recommended method to use.
+    //     (bool sent, bytes memory data) = _to.call.value(msg.value)("");
+    //     require(sent, "Failed to send Ether");
+    // }
+
+    function destruct(address payable _user, string memory _name) public payable {
+        ApiInfo ai = ApiStore[_name];
+        ai.destruct(_user);
+        apiStoreCount--;
     }
 
 
@@ -111,7 +118,7 @@ contractAddress = _address;
 
 function setProvableAddress(address payable _user) public {
 if (userStore[_user] == address(0x0)) {
-userStore[_user] = address(new ProvableInfo()); // todo: if user address exist , use existing Provable Info
+userStore[_user] = address(new ProvableInfo(_user)); // todo: if user address exist , use existing Provable Info
 }
 }
 
@@ -119,6 +126,11 @@ function getApiInfo(address _user) public view returns (address _contractAddress
 string memory _name, uint _cost, uint _api_balance, uint _provable_balance) {
 address paddr = userStore[_user];
 return (contractAddress, paddr, owner, name, cost, contractAddress.balance, paddr.balance);
+}
+
+function destruct(address payable _user) public {
+ProvableInfo pi = ProvableInfo(userStore[_user]);
+pi.destruct(_user);
 }
 
 function run(address payable _user) public returns(string memory) {
@@ -135,8 +147,16 @@ event LogConstructorInitiated(string nextStep);
 event LogPriceUpdated(string price);
 event LogNewProvableQuery(string description);
 
-constructor() public {
-OAR = OracleAddrResolverI(0x64F4bdf6A4Fc5B58078cb5860B2539E65FE5f169);
+string provable_query_param1 = "URL";
+string provable_query_param2 = "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price";
+
+address payable user;
+uint runCount;
+
+
+constructor(address payable _user) public {
+user = _user;
+OAR = OracleAddrResolverI(0xFEB946A333bA34a94dE99e6a91521F7CC689be43);
 emit LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Provable Query.");
 }
 
@@ -146,6 +166,11 @@ function getBalance() public view returns (uint) {
 return address(this).balance;
 }
 
+function destruct(address payable _receiver) public {
+require(user == _receiver, "Not a user");
+selfdestruct(_receiver);
+}
+
 function __callback(bytes32 myid, string memory result)
 public override{
 //   if (msg.sender != provable_cbAddress()) revert();
@@ -153,20 +178,22 @@ ETHUSD = result;
 emit LogPriceUpdated(result);
 }
 
-function updatePrice(address _user) payable public returns (string memory){
+function runApi(address _user) payable public returns (string memory){
 if (provable_getPrice("URL") > address(this).balance) {
 emit LogNewProvableQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
 } else {
 emit LogNewProvableQuery("Provable query was sent, standing by for the answer..");
 //   provable_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
 // provable_query("WolframAlpha", "random number between 0 and 100");
-provable_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
+provable_query(provable_query_param1, provable_query_param2);
 }
 }
 
 function run(address _user) public returns (string memory) {
 // return ("running ProvableApi uri ...");
-updatePrice(_user);
+require(user==_user, "Provable Api Not Authorized");
+runApi(_user);
+runCount++;
 emit LogPriceUpdated(ETHUSD);
 return ETHUSD;
 }
@@ -182,4 +209,27 @@ return ETHUSD;
 //     uint useCost;
 
 // }
+
+contract ReceiveEther {
+// This is a special function called the fallback.
+// The fallback function declared payable enables other contracts to
+// send Ether by send, transfer, or call.
+fallback () external payable {}
+
+receive() external payable {}
+
+function getBalance() public view returns (uint) {
+return msg.sender.balance;
+}
+}
+
+contract SendEther {
+
+function sendEther(address payable  _to) public payable {
+// Call returns a boolean value indicating success or failure.
+// This is the current recommended method to use.
+(bool sent,) = _to.call.value(msg.value)("");
+require(sent, "Failed to send Ether");
+}
+}
 
