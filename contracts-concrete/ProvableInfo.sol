@@ -20,10 +20,11 @@ contract ProvableInfo is usingProvable, TransferEther {
     string RESULT; // stores the result of the query
 
     address oar; // OAR = 0xFEB946A333bA34a94dE99e6a91521F7CC689be43
-    address owner; // 0x12b94d2015c0A563150905eeb0828e91cd40eD9E
-    address user; // 0x45F4Cc5C539d29c9fcC9415F5437156d27f7fcad
+    address owner; // 0x12b94d2015c0A563150905eeb0828e91cd40eD9E // 0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c
+    address user;  // 0x45F4Cc5C539d29c9fcC9415F5437156d27f7fcad // 0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C
 
-    constructor(string memory _name, string memory _param1, string memory _param2, uint _cost, address _OAR, address _owner, address _user) public {
+    constructor(string memory _name, string memory _param1, string memory _param2, uint _cost, address _OAR, address _owner, address _user)
+    public {
         name = _name;
         provable_query_param1 = _param1;
         provable_query_param2 = _param2;
@@ -38,39 +39,52 @@ contract ProvableInfo is usingProvable, TransferEther {
         owner = _owner;
         user = _user;
 
-        emit LogConstructorInitiated("Constructor was initiated for ProvableInfo");
+        emit LogConstructorInitiated("Constructor was initiated for ProvableInfo. Keep enough balance to run(<your address>)");
     }
 
-    function get() public view
+    // modifier onlyBy(address _user)
+    // {
+    //     require(
+    //         user == _user,
+    //         "Sender not authorized."
+    //     );
+    //     _;
+    // }
+
+    function get(address _user) public view
     returns (address Contract, uint Balance, string memory Name, uint Cost, uint RunCount, uint TotalOwed, string memory LastRESULT,
         address OAR, address Owner, address User) {
+        require(user==_user, "User Not Authorized");
         return (address(this), address(this).balance, name, cost, runCount, totalOwed, RESULT,
         oar, owner, user);
     }
 
-    function getBalance() override public view returns (uint) {
+    function getContractBalance(address _user) public view  returns (uint) {
+        require(user==_user, "User Not Authorized");
         return address(this).balance;
     }
 
-    function Result() view public returns (string memory) {
-        require(user == address(msg.sender), "Not a user");
+    function getResult(address _user) view public  returns (string memory) {
+        require(user==_user, "User Not Authorized");
         return RESULT;
     }
 
-    function close() public {
-        require(user == address(msg.sender), "Not a user");
+    function close(address _user) public  {
+        require(user==_user, "User Not Authorized");
         selfdestruct(payable(user));
     }
 
     function __callback(bytes32 myid, string memory result)
-    public override{
+    public
+    override
+    {
         //   if (msg.sender != provable_cbAddress()) revert();
         RESULT = result;
         emit LogPriceUpdated(result);
     }
 
-    function runApi() payable public {
-        require(user==address(msg.sender), "User Not Authorized");
+    function runApi(address _user) payable public {
+        require(user==_user, "User Not Authorized to run Api");
         if (provable_getPrice("URL") > address(this).balance) {
             emit LogNewProvableQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
         } else {
@@ -81,8 +95,8 @@ contract ProvableInfo is usingProvable, TransferEther {
         }
     }
 
-    function run() public {
-        require(user==address(msg.sender), "User Not Authorized");
-        runApi();
+    function run(address _user) public {
+        require(user==_user, "User Not Authorized");
+        runApi(_user);
     }
 }
