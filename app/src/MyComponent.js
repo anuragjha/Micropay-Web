@@ -28,21 +28,20 @@ export default ({ drizzle, drizzleState }) => {
       </div>
 
       <div className="section">
-        <h2>SimpleStorage</h2>
-        <p>
-          This shows a simple ContractData component with no arguments, along
-          with a form to set its value.
-        </p>
+        <h2>Storage</h2>
         <p>
           <strong>Stored Value: </strong>
           <ContractData
             drizzle={drizzle}
             drizzleState={drizzleState}
-            contract="SimpleStorage"
-            method="storedData"
+            contract="Storage"
+            method="getStringData"
           />
         </p>
-        <ContractForm drizzle={drizzle} contract="TransferEther" method="getSender" />
+        <p>
+            <strong>Set Value: </strong>
+            <ContractForm drizzle={drizzle} contract="Storage" method="setStringData" methodArgs="world" />
+        </p>
       </div>
 
       {/*<div className="section">
