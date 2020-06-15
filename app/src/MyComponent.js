@@ -1,11 +1,19 @@
-import React from "react";
+import React, { Component } from 'react';
+import Alert from 'react-bootstrap/Alert';
 import { newContextComponents } from "@drizzle/react-components";
 import logo from "./logo.png";
+
+import Button from 'react-bootstrap/Button';
 
 const { AccountData, ContractData, ContractForm } = newContextComponents;
 
 export default ({ drizzle, drizzleState }) => {
   // structure drizzle and drizzleState from props
+
+    function sayHello() {
+      alert('Hello!');
+    }
+
   return (
     <div className="App">
       <div>
@@ -15,6 +23,13 @@ export default ({ drizzle, drizzleState }) => {
           Marketplace for APIs
         </p>
       </div>
+
+          <Alert dismissible variant="danger">
+            <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+            <p>
+              Change this and that and try again.
+            </p>
+          </Alert>
 
       <div className="section">
         <h2>Active Account</h2>
