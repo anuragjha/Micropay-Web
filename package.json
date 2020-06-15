@@ -23,9 +23,7 @@
   },
   "homepage": "https://github.com/truffle-box/drizzle-box#readme",
   "dependencies": {
-    "@chainlink/contracts": "0.0.4",
     "@openzeppelin/contracts": "^2.4.0",
-    "ethereum-bridge": "^0.6.2",
-    "solc": "^0.6.9"
+    "ethereum-bridge": "^0.6.2"
   }
 }

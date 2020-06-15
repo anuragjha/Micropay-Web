@@ -1,14 +1,10 @@
-pragma solidity ^0.5.0;
+pragma solidity >=0.5.17 <0.6.0;
 
 contract Storage {
     //    event StorageSet(string _message);
 
     uint256 public uintData;
     string public stringData;
-
-    constructor() public {
-    stringData="hello";
-    }
 
     function getUintData() public view returns(uint) {
         return uintData;
