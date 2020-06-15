@@ -79,6 +79,28 @@ export default ({ drizzle, drizzleState }) => {
       </p>
     </div>
 
+
+        <div className="section">
+          <h2>ProvableInfo</h2>
+          <p>
+            <strong>getBalance(): </strong>
+            <ContractData
+              drizzle={drizzle}
+              drizzleState={drizzleState}
+              contract="ProvableInfo"
+              method="get"
+              methodArgs={["0x45F4Cc5C539d29c9fcC9415F5437156d27f7fcad"]}
+            />{" "}
+          </p>
+          <p>
+            <strong>getBalance(): </strong>
+                <button onClick={sayHello}>
+                  Click me!
+                </button>
+          </p>
+          <Button variant="primary" onClick={sayHello}>Primary</Button>{' '}
+        </div>
+
       {/*<div className="section">
         <h2>SimpleStorage</h2>
         <p>
