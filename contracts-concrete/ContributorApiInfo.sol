@@ -1,4 +1,4 @@
-pragma solidity > 0.6.0 < 0.7.0;
+pragma solidity >=0.5.17 <0.6.0;
 
 import "./TransferEther.sol";
 // import "./ApiInfo.sol";
@@ -28,10 +28,11 @@ contract ContributorApiInfo is TransferEther {
 
     // returns ApiInfo contract
     function getApiInfo(string memory _name) private view returns(ApiInfo){
-        return ApiInfo(payable(contibutorApiStore[_name]));
+        return ApiInfo(address(uint160(address(contibutorApiStore[_name]))));
+
     }
 
-    function getBalance() override public view onlyUser() returns (uint) {
+    function getBalance() public view onlyUser() returns (uint) {
         // require(user != address(msg.sender), "User NOT authorized");
         return address(this).balance;
     }
@@ -43,14 +44,15 @@ contract ContributorApiInfo is TransferEther {
         uint Cost, address Owner, address OAR) {
         require(contributor==_contributor, "User Not Authorized");
         if (contibutorApiStore[_name] != address(0)) {
-            ApiInfo ai = ApiInfo(payable(contibutorApiStore[_name]));
+            ApiInfo ai = ApiInfo(address(uint160(address(contibutorApiStore[_name]))));
             return ai.get(_contributor);
         }
     }
 
     function close() public onlyUser() {
         // require(user == address(msg.sender), "Not a user");
-        selfdestruct(payable(contributor));
+        selfdestruct(address(uint160(contributor)));
+
     }
 
     // function addToContributorApiStore(string memory _name, address _apiInfoAddress) private onlyUser() {
@@ -59,7 +61,7 @@ contract ContributorApiInfo is TransferEther {
 
     // register API with the Platform
     function registerApi(address _platform, string memory _name, string memory _param1, string memory _param2, uint _cost)
-    public returns(address _apiInfoAddress) {
+    public returns(address) {
         Platform p = Platform(_platform);
         address _address = p.createApiInfo(_name, _param1, _param2, _cost, contributor);
         contibutorApiStore[_name] = _address;

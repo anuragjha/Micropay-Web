@@ -1,4 +1,4 @@
-pragma solidity > 0.6.0 < 0.7.0;
+pragma solidity >=0.5.17 <0.6.0;
 
 import "./ApiInfo.sol";
 import "./ProvableInfo.sol";
@@ -45,7 +45,7 @@ contract Platform {
     returns (address)
     {
         address apiInfoAddress = ApiStore[_name];
-        ApiInfo apiInfo = ApiInfo(payable(apiInfoAddress));
+        ApiInfo apiInfo = ApiInfo((apiInfoAddress));
         address provableInfoAddress = apiInfo.createNewProvableInfo(_user);
         return provableInfoAddress;
 

@@ -1,6 +1,6 @@
-pragma solidity > 0.6.0 < 0.7.0;
+pragma solidity >=0.5.17 <0.6.0;
 
-import "github.com/provable-things/ethereum-api/provableAPI_0.6.sol";
+import "github.com/provable-things/ethereum-api/provableAPI_0.5.sol";
 import "./TransferEther.sol";
 
 
@@ -71,12 +71,15 @@ contract ProvableInfo is usingProvable, TransferEther {
 
     function close(address _user) public  {
         require(user==_user, "User Not Authorized");
-        selfdestruct(payable(user));
+
+        // (bool sent,) = owner.call.value(totalOwed)("");
+        // require(sent, "Failed to send Ether");
+
+        selfdestruct(address(uint160(user)));
     }
 
     function __callback(bytes32 myid, string memory result)
     public
-    override
     {
         //   if (msg.sender != provable_cbAddress()) revert();
         RESULT = result;

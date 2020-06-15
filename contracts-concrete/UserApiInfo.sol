@@ -1,4 +1,4 @@
-pragma solidity > 0.6.0 < 0.7.0;
+pragma solidity >=0.5.17 <0.6.0;
 
 import "./TransferEther.sol";
 import "./ProvableInfo.sol";
@@ -31,7 +31,7 @@ contract UserApiInfo is TransferEther {
         return  userApiStore[_name];
     }
 
-    function getBalance() override public view onlyUser() returns (uint) {
+    function getBalance() public view onlyUser() returns (uint) {
         // require(user != address(msg.sender), "User NOT authorized");
         return address(this).balance;
     }
@@ -51,15 +51,17 @@ contract UserApiInfo is TransferEther {
         address OAR, address Owner, address User) {
         require(user==_user, "User Not Authorized");
         if (userApiStore[_name] != address(0)) {
-            ProvableInfo pi = ProvableInfo(payable(userApiStore[_name]));
+            ProvableInfo pi = ProvableInfo(address(uint160(address(userApiStore[_name]))));
             return pi.get(user);
+
+
         }
     }
 
     function getContractBalance(address _user, string memory _name) public view  returns (uint) {
         require(user==_user, "User Not Authorized");
         if (userApiStore[_name] != address(0)) {
-            ProvableInfo pi = ProvableInfo(payable(userApiStore[_name]));
+            ProvableInfo pi = ProvableInfo(address(uint160(address(userApiStore[_name]))));
             return pi.getContractBalance(user);
         }
     }
@@ -67,7 +69,7 @@ contract UserApiInfo is TransferEther {
     function getResult(address _user, string memory _name) view public  returns (string memory) {
         require(user==_user, "User Not Authorized");
         if (userApiStore[_name] != address(0)) {
-            ProvableInfo pi = ProvableInfo(payable(userApiStore[_name]));
+            ProvableInfo pi = ProvableInfo(address(uint160(address(userApiStore[_name]))));
             return pi.getResult(user);
         }
         return "";
@@ -76,7 +78,7 @@ contract UserApiInfo is TransferEther {
     function close(address _user, string memory _name) public  { // close provableInfo for (user, name)
         require(user==_user, "User Not Authorized");
         if (userApiStore[_name] != address(0)) {
-            ProvableInfo pi = ProvableInfo(payable(userApiStore[_name]));
+            ProvableInfo pi = ProvableInfo(address(uint160(address(userApiStore[_name]))));
             pi.close(user);
         }
     }
@@ -84,8 +86,8 @@ contract UserApiInfo is TransferEther {
     function run( string memory _name) public onlyUser() {
         // require(user != address(msg.sender), "User NOT authorized");
         if (userApiStore[_name] != address(0)) {
-            ProvableInfo pi = ProvableInfo(payable(userApiStore[_name]));
-            pi.run(payable(user));
+            ProvableInfo pi = ProvableInfo(address(uint160(address(userApiStore[_name]))));
+            pi.run(address(uint160(user)));
         }
     }
 
