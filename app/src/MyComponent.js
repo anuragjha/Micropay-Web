@@ -30,7 +30,7 @@ export default ({ drizzle, drizzleState }) => {
       <div className="section">
         <h2>Storage</h2>
         <p>
-          <strong>Stored Value: </strong>
+          <strong>getStringData(): </strong>
           <ContractData
             drizzle={drizzle}
             drizzleState={drizzleState}
@@ -39,10 +39,45 @@ export default ({ drizzle, drizzleState }) => {
           />
         </p>
         <p>
-            <strong>Set Value: </strong>
-            <ContractForm drizzle={drizzle} contract="Storage" method="setStringData" methodArgs="world" />
+            <strong>setStringData(): </strong>
+            <ContractForm
+              drizzle={drizzle}
+              contract="Storage"
+              method="setStringData"
+              methodArgs="world"
+            />
         </p>
       </div>
+
+    <div className="section">
+      <h2>Transfer Ether</h2>
+      <p>
+        <strong>getBalance(): </strong>
+        <ContractData
+          drizzle={drizzle}
+          drizzleState={drizzleState}
+          contract="TransferEther"
+          method="getBalance"
+        />
+      </p>
+        <p>
+          <strong>getSender(): </strong>
+          <ContractData
+            drizzle={drizzle}
+            drizzleState={drizzleState}
+            contract="TransferEther"
+            method="getSender"
+          />
+        </p>
+      <p>
+          <strong>sendEther(): </strong>
+          <ContractForm
+            drizzle={drizzle}
+            contract="TransferEther"
+            method="sendEther"
+          />
+      </p>
+    </div>
 
       {/*<div className="section">
         <h2>SimpleStorage</h2>
