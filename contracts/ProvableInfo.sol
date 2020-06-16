@@ -1,11 +1,10 @@
 pragma solidity >=0.5.17 <0.6.0;
 
-// import "github.com/provable-things/ethereum-api/provableAPI_0.5.sol";
+import "github.com/provable-things/ethereum-api/provableAPI_0.5.sol";
 import "./TransferEther.sol";
 
 
-// contract ProvableInfo is usingProvable, TransferEther {
-contract ProvableInfo is TransferEther {
+contract ProvableInfo is usingProvable, TransferEther {
     event LogConstructorInitiated(string nextStep);
     event LogPriceUpdated(string price);
     event LogNewProvableQuery(string description);
@@ -20,7 +19,7 @@ contract ProvableInfo is TransferEther {
     uint totalOwed;
     string RESULT; // stores the result of the query
 
-    address oar; // OAR = 0xFEB946A333bA34a94dE99e6a91521F7CC689be43
+    address oar; // OAR = 0x64F4bdf6A4Fc5B58078cb5860B2539E65FE5f169
     address owner; // 0x12b94d2015c0A563150905eeb0828e91cd40eD9E // 0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c
     address user;  // 0x45F4Cc5C539d29c9fcC9415F5437156d27f7fcad // 0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C
 
@@ -35,7 +34,7 @@ contract ProvableInfo is TransferEther {
         totalOwed = 0;
         RESULT = "";
 
-        //   OAR = OracleAddrResolverI(_OAR);
+        OAR = OracleAddrResolverI(_OAR);
         oar = _OAR;
         owner = _owner;
         user = _user;
@@ -72,48 +71,34 @@ contract ProvableInfo is TransferEther {
 
     function close(address _user) public  {
         require(user==_user, "User Not Authorized");
-
-        // (bool sent,) = owner.call.value(totalOwed)("");
-        // require(sent, "Failed to send Ether");
-
-        selfdestruct(address(uint160(user)));
+        address payable addr = address(uint160(address(_user)));
+        selfdestruct(addr);
+        // selfdestruct(payable(user));
     }
 
-//    function __callback(bytes32 myid, string memory result)
-//    public
-//    {
-//        //   if (msg.sender != provable_cbAddress()) revert();
-//        RESULT = result;
-//        emit LogPriceUpdated(result);
-//    }
+    function __callback(bytes32 myid, string memory result)
+    public
+    // override
+    {
+        //   if (msg.sender != provable_cbAddress()) revert();
+        RESULT = result;
+        emit LogPriceUpdated(result);
+    }
 
-    // function runApi(address _user) payable public {
-    //     require(user==_user, "User Not Authorized to run Api");
-    //     if (provable_getPrice("URL") > address(this).balance) {
-    //         emit LogNewProvableQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
-    //     } else {
-    //         emit LogNewProvableQuery("Provable query was sent, standing by for the answer..");
-    //         runCount++; // Incrementing run count
-    //         totalOwed += cost;
-    //         provable_query(provable_query_param1, provable_query_param2);
-    //     }
-    // }
-    function runFakeApi(address _user) payable public {
+    function runApi(address _user) payable public {
         require(user==_user, "User Not Authorized to run Api");
-        // if (200000 > address(this).balance) {
-        //     emit LogNewProvableQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
-        // } else {
+        if (provable_getPrice("URL") > address(this).balance) {
+            emit LogNewProvableQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
             emit LogNewProvableQuery("Provable query was sent, standing by for the answer..");
             runCount++; // Incrementing run count
             totalOwed += cost;
-            // provable_query(provable_query_param1, provable_query_param2);
-            RESULT = "250.55";
-        // }
+            provable_query(provable_query_param1, provable_query_param2);
+        }
     }
 
     function run(address _user) public {
         require(user==_user, "User Not Authorized");
-//        runApi(_user);
-        runFakeApi(_user);
+        runApi(_user);
     }
 }
