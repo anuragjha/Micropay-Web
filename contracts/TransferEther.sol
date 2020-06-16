@@ -13,9 +13,9 @@ contract TransferEther {
         (bool sent,) = _to.call.value(msg.value)("");
         require(sent, "Failed to send Ether");
     }
-
-    function transferEther(address payable  _to, uint _value) public payable {
-        (bool sent,) = _to.call.value(_value)("");
+    
+    function sendEtherToContract(address payable _to) public payable {
+        (bool sent, bytes memory data) = address(uint160(address(_to))).call.value(msg.value)("");
         require(sent, "Failed to send Ether");
     }
 

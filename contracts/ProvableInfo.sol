@@ -100,15 +100,15 @@ contract ProvableInfo is TransferEther {
     // }
     function runFakeApi(address _user) payable public {
         require(user==_user, "User Not Authorized to run Api");
-        if (200000 > address(this).balance) {
-            emit LogNewProvableQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
-        } else {
+        // if (200000 > address(this).balance) {
+        //     emit LogNewProvableQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
+        // } else {
             emit LogNewProvableQuery("Provable query was sent, standing by for the answer..");
             runCount++; // Incrementing run count
             totalOwed += cost;
             // provable_query(provable_query_param1, provable_query_param2);
             RESULT = "250.55";
-        }
+        // }
     }
 
     function run(address _user) public {
