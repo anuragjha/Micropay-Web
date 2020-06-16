@@ -82,6 +82,8 @@ contract UserApiInfo is TransferEther {
         if (userApiStore[_name] != address(0)) {
             ProvableInfo pi = ProvableInfo(address(uint160(address(userApiStore[_name]))));
             pi.close(user);
+
+            delete userApiStore[_name];
         }
     }
 
