@@ -1,6 +1,6 @@
-pragma solidity > 0.6.0 < 0.7.0;
+pragma solidity >=0.5.17 <0.6.0;
 
-import "github.com/provable-things/ethereum-api/provableAPI_0.6.sol";
+import "github.com/provable-things/ethereum-api/provableAPI_0.5.sol";
 import "./TransferEther.sol";
 
 
@@ -19,7 +19,7 @@ contract ProvableInfo is usingProvable, TransferEther {
     uint totalOwed;
     string RESULT; // stores the result of the query
 
-    address oar; // OAR = 0xFEB946A333bA34a94dE99e6a91521F7CC689be43
+    address oar; // OAR = 0x64F4bdf6A4Fc5B58078cb5860B2539E65FE5f169
     address owner; // 0x12b94d2015c0A563150905eeb0828e91cd40eD9E // 0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c
     address user;  // 0x45F4Cc5C539d29c9fcC9415F5437156d27f7fcad // 0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C
 
@@ -71,12 +71,14 @@ contract ProvableInfo is usingProvable, TransferEther {
 
     function close(address _user) public  {
         require(user==_user, "User Not Authorized");
-        selfdestruct(payable(user));
+        address payable addr = address(uint160(address(_user)));
+        selfdestruct(addr);
+        // selfdestruct(payable(user));
     }
 
     function __callback(bytes32 myid, string memory result)
     public
-    override
+    // override
     {
         //   if (msg.sender != provable_cbAddress()) revert();
         RESULT = result;
