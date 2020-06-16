@@ -49,10 +49,11 @@ contract Platform {
     returns (address)
     {
         address apiInfoAddress = ApiStore[_name];
-        ApiInfo apiInfo = ApiInfo((apiInfoAddress));
+        // ApiInfo apiInfo = ApiInfo(payable(apiInfoAddress));
+        ApiInfo apiInfo = ApiInfo(address(uint160(address(apiInfoAddress))));
         address provableInfoAddress = apiInfo.createNewProvableInfo(_user);
         return provableInfoAddress;
-
+                            
     }
 
 
