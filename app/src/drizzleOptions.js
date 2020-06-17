@@ -11,12 +11,16 @@ import UserApiInfo from "./contracts/UserApiInfo.json";
 import ApiInfo from "./contracts/ApiInfo.json";
 import ProvableInfo from "./contracts/ProvableInfo.json";
 
+
+import UniDirectionalPayment from "./contracts/UniDirectionalPayment.json";
+
+
 const options = {
   web3: {
     block: false,
     customProvider: new Web3("ws://127.0.0.1:8545"),
   },
-  contracts: [Storage, TransferEther, Platform, ContributorApiInfo, UserApiInfo, ApiInfo, ProvableInfo],
+  contracts: [Storage, TransferEther, Platform, ContributorApiInfo, UserApiInfo, ApiInfo, ProvableInfo, UniDirectionalPayment],
   events: {
     SimpleStorage: ["StorageSet"],
 
@@ -25,6 +29,7 @@ const options = {
     UserApiInfo: ["LogConstructorInitiated"],
     ApiInfo: ["LogConstructorInitiated", "LogProvableInfoCreated"],
     ProvableInfo: ["LogConstructorInitiated", "LogPriceUpdated", "LogNewProvableQuery"],
+    UniDirectionalPayment: ["print", "printAddress"]
   },
 };
 

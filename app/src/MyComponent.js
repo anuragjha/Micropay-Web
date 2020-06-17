@@ -8,10 +8,23 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
+  import { connect } from "@connext/client";
+  import { Wallet } from "ethers";
+
+import EthCrypto from 'eth-crypto';
+import Web3 from 'web3';
+const web3 = new Web3();
+
 const { AccountData, ContractData, ContractForm } = newContextComponents;
 
 export default ({ drizzle, drizzleState }) => {
   // structure drizzle and drizzleState from props
+
+  function useInput({ type /*...*/ }) {
+    const [value, setValue] = useState("");
+    const input = <input value={value} onChange={e => setValue(e.target.value)} type={type} />;
+    return [value, input];
+  }
 
     const [profileIndex, setProfileIndex] = useInput({ type: "int" });
     const [contibutorApiStoreInput, setContibutorApiStoreInput] = useInput({ type: "string" });
@@ -22,17 +35,157 @@ export default ({ drizzle, drizzleState }) => {
       alert('Hello!');
     }
 
-     function useInput({ type /*...*/ }) {
-       const [value, setValue] = useState("");
-       const input = <input value={value} onChange={e => setValue(e.target.value)} type={type} />;
-       return [value, input];
-     }
+     //////////
+     const [ok, setOk] = useState();
+     ///sign///
+
+     const EthCrypto = require('eth-crypto');
+     let x;
+     let alice = {};
+     alice.address = '0x12b94d2015c0A563150905eeb0828e91cd40eD9E';
+     alice.privateKey = '1a4a7328a67ff70b3e74c624d3f19afe5fc2452973bf86c641173cd7fc170efc';
+     alice.publicKey = EthCrypto.publicKeyByPrivateKey(alice.privateKey)
+     let bob = {};
+     bob.address = '0x1Bc95B7E67E51f0Cf793ECDB54720ff91ac8409f';
+     bob.privateKey = '190c1b1fffe13e9ff8412af89c3becbc284019b8d86928d3d92b31da12ff9dcf';
+     bob.publicKey = EthCrypto.publicKeyByPrivateKey(bob.privateKey)
+     
+     let payload;
+     let decryptedPayload;
 
 
+     function constructPaymentMessage(contractAddress, amount) {
+      return contractAddress+"___"+amount;
+    }
+
+     async function signing() {
+
+        const secretMessage = constructPaymentMessage(
+          '0xd82847B95dccA0e6fC2f1684D166A03907C8dA3C', 1600000000000000000
+          // 'My name is Satoshi Buterin',1
+        )//
+
+        const signature = EthCrypto.sign(
+          alice.privateKey,
+          EthCrypto.hash.keccak256(secretMessage)
+        );
+        console.log("signature", signature);
+          ////
+        let y= web3.utils.hexToBytes(signature);
+        // setOk(y);
+        
+          console.log(y);
+          ////
+        payload = {
+            message: secretMessage,
+            signature
+        };
+        const encrypted = await EthCrypto.encryptWithPublicKey(
+            bob.publicKey, // by encryping with bobs publicKey, only bob can decrypt the payload with his privateKey
+            JSON.stringify(payload) // we have to stringify the payload before we can encrypt it
+        );
+        /*  { iv: 'c66fbc24cc7ef520a7...',
+          ephemPublicKey: '048e34ce5cca0b69d4e1f5...',
+          ciphertext: '27b91fe986e3ab030...',
+          mac: 'dd7b78c16e462c42876745c7...'
+            }
+        */
+        
+        // we convert the object into a smaller string-representation
+        const encryptedString = EthCrypto.cipher.stringify(encrypted);
+        // > '812ee676cf06ba72316862fd3dabe7e403c7395bda62243b7b0eea5eb..'
+        x = encryptedString;
+        console.log(x)
+        
+        // 
+      }
+
+      async function recovering() {
+                // we parse the string into the object again
+        const encryptedObject = EthCrypto.cipher.parse(x);
+
+        const decrypted = await EthCrypto.decryptWithPrivateKey(
+            bob.privateKey,
+            encryptedObject
+        );
+        decryptedPayload = JSON.parse(decrypted);
+
+        // check signature
+        const senderAddress = EthCrypto.recover(
+            decryptedPayload.signature,
+            EthCrypto.hash.keccak256(decryptedPayload.message)
+        );
+
+        console.log(
+            'Got message from ' +
+            senderAddress +
+            ': ' +
+            decryptedPayload.message
+        );
+        // > 'Got message from 0x19C24B2d99FB91C5...: "My name is Satoshi Buterin" Buterin'
+      }
+
+      async function answering() {
+        const answerMessage = 'And I am Bob Kelso';
+        const answerSignature = EthCrypto.sign(
+            bob.privateKey,
+            EthCrypto.hash.keccak256(answerMessage)
+        );
+        const answerPayload = {
+            message: answerMessage,
+            signature: answerSignature
+        };
+
+        const alicePublicKey = EthCrypto.recoverPublicKey(
+            decryptedPayload.signature,
+            EthCrypto.hash.keccak256(payload.message)
+        );
+
+        const encryptedAnswer = await EthCrypto.encryptWithPublicKey(
+            alicePublicKey,
+            JSON.stringify(answerPayload)
+        );
+        // now we send the encryptedAnswer to alice over the internet.. *bieb, bieb, blob*
+      }
+      ///////
+      ///////
+
+      
+      (async () => {
+      
+        const channel = await connect({
+          ethProviderUrl: "http://127.0.0.1:8545",
+          signer: Wallet.createRandom().privateKey,
+          nodeUrl: "http://localhost:8080",
+        });
+      
+        console.log(`Successfully connected channel with public id: ${channel.publicIdentifier}`);
+      
+      })()
+
+      ///////
+      ///////
 
   return (
     <div className="App">
         <Container>
+
+{/* test row */}
+        <Row>
+        <Col md="auto">
+              <div>
+                <h2>ok:</h2>
+                {}
+              </div>
+            </Col>
+            <Col md="auto">
+              <div>
+                <Button onClick={() => {signing()}}>signing</Button>
+                <Button onClick={() => {recovering()}}>recovering</Button>
+                <Button onClick={() => {answering()}}>answering</Button>
+              </div>
+            </Col>
+        </Row>
 
           {/* Top Row */}
           <Row>

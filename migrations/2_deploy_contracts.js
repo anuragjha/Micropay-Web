@@ -9,6 +9,8 @@ const UserApiInfo = artifacts.require("UserApiInfo");
 const ApiInfo = artifacts.require("ApiInfo");
 const ProvableInfo = artifacts.require("ProvableInfo");
 
+const UniDirectionalPayment = artifacts.require("UniDirectionalPayment");
+
 module.exports = function(deployer) {
 
   deployer.deploy(Storage);
@@ -25,5 +27,7 @@ module.exports = function(deployer) {
   deployer.deploy(ProvableInfo, "ok", "URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price",
     123456789, "0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475", "0x12b94d2015c0A563150905eeb0828e91cd40eD9E",
     "0x12b94d2015c0A563150905eeb0828e91cd40eD9E");
+
+    deployer.deploy(UniDirectionalPayment, "0x1Bc95B7E67E51f0Cf793ECDB54720ff91ac8409f", 12312312312);
 
 };
