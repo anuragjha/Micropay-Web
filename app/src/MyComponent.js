@@ -11,8 +11,22 @@ import Button from 'react-bootstrap/Button';
   import { connect } from "@connext/client";
   import { Wallet } from "ethers";
 
-import EthCrypto from 'eth-crypto';
-import Web3 from 'web3';
+  import EthCrypto from 'eth-crypto';
+  import Web3 from 'web3';
+
+
+import firebase from './firebase';
+
+firebase.firestore().collection('times').add({
+  title: "polll purrr",
+  time_seconds: 45
+})
+
+/////// firebase
+// var database = firebase.database();
+// const [words, setWords] = useState([]);
+// const [advancedWords, setAdvancedWords] = useState([]);
+
 const web3 = new Web3();
 
 const { AccountData, ContractData, ContractForm } = newContextComponents;
@@ -38,6 +52,11 @@ export default ({ drizzle, drizzleState }) => {
      //////////
      const [ok, setOk] = useState();
      ///sign///
+     const [contractAddressCheck, setContractAddressCheck] = useInput({type: "string"});
+     const [amountCheck, setAmountCheck] = useInput({type: "number"});
+     const [encryptedCheck, setEncryptedCheck] = useInput({ type: "string" });
+
+    //  const [encryptedCheck, setEncryptedCheck] = useInput({ type: "string" });
 
      const EthCrypto = require('eth-crypto');
      let x;
@@ -58,10 +77,11 @@ export default ({ drizzle, drizzleState }) => {
       return contractAddress+"___"+amount;
     }
 
-     async function signing() {
+     async function signing(address, amount) {
 
         const secretMessage = constructPaymentMessage(
-          '0xd82847B95dccA0e6fC2f1684D166A03907C8dA3C', 1600000000000000000
+          address, amount
+          // '0xd82847B95dccA0e6fC2f1684D166A03907C8dA3C', 1600000000000000000
           // 'My name is Satoshi Buterin',1
         )//
 
@@ -90,25 +110,33 @@ export default ({ drizzle, drizzleState }) => {
           mac: 'dd7b78c16e462c42876745c7...'
             }
         */
+       console.log("encrpyted payload:")
+        console.log(encrypted)
         
         // we convert the object into a smaller string-representation
         const encryptedString = EthCrypto.cipher.stringify(encrypted);
         // > '812ee676cf06ba72316862fd3dabe7e403c7395bda62243b7b0eea5eb..'
         x = encryptedString;
+        console.log("converted encrpyted payload:")
         console.log(x)
         
         // 
       }
 
-      async function recovering() {
+      async function recovering(encryptedString) {
                 // we parse the string into the object again
-        const encryptedObject = EthCrypto.cipher.parse(x);
+        const encryptedObject = EthCrypto.cipher.parse(encryptedString);
 
         const decrypted = await EthCrypto.decryptWithPrivateKey(
             bob.privateKey,
             encryptedObject
         );
+        console.log("decrypted:")
+        console.log(decrypted)
+
         decryptedPayload = JSON.parse(decrypted);
+        console.log("decryptedPayload:")
+        console.log(decryptedPayload)
 
         // check signature
         const senderAddress = EthCrypto.recover(
@@ -180,8 +208,13 @@ export default ({ drizzle, drizzleState }) => {
             </Col>
             <Col md="auto">
               <div>
-                <Button onClick={() => {signing()}}>signing</Button>
-                <Button onClick={() => {recovering()}}>recovering</Button>
+                {setContractAddressCheck} -> {contractAddressCheck}
+                {setAmountCheck} -> {amountCheck}
+                <Button onClick={() => {signing(contractAddressCheck, amountCheck)}}>signing</Button>
+                
+
+                {setEncryptedCheck} -> {encryptedCheck}
+                <Button onClick={() => {recovering(encryptedCheck)}}>recovering</Button>
                 <Button onClick={() => {answering()}}>answering</Button>
               </div>
             </Col>

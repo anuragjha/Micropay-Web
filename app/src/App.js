@@ -5,6 +5,13 @@ import drizzleOptions from "./drizzleOptions";
 import MyComponent from "./MyComponent";
 import "./App.css";
 
+import firebase from './firebase';
+
+firebase.firestore().collection('times').add({
+  title: "Rubix cube",
+  time_seconds: 45
+})
+
 const drizzle = new Drizzle(drizzleOptions);
 
 const App = () => {
