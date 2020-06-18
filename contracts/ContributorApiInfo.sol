@@ -3,15 +3,15 @@ pragma solidity >=0.5.17 <0.6.0;
 import "./TransferEther.sol";
 // import "./ApiInfo.sol";
 import "./Platform.sol";
+import "./UniDirectionalPayment.sol";
 
 contract ContributorApiInfo is TransferEther {
     event LogConstructorInitiated(string nextStep); //todo: add events
+    event print(string);
 
     address public contractAddress;
     address public contributor;
     mapping(string => address) public contibutorApiStore; // map of "Api name" to "ApiInfo address"
-
-    uint public testNum;
 
     constructor(address _contributor) public {
         contractAddress = address(this);
@@ -51,10 +51,10 @@ contract ContributorApiInfo is TransferEther {
         }
     }
 
-    function close() public onlyUser() {
-        // require(user == address(msg.sender), "Not a user");
-        selfdestruct(address(uint160(contributor)));
-
+    function withdraw(address _payment, uint _payeeBalance, bytes memory _signature) public payable onlyUser() {
+        // require(contributor == address(msg.sender), "Not a user");
+        UniDirectionalPayment udp = UniDirectionalPayment(address(uint160(address(_payment))));
+        udp.close(contributor, _payeeBalance, _signature);
     }
 
     // function addToContributorApiStore(string memory _name, address _apiInfoAddress) private onlyUser() {
@@ -64,7 +64,6 @@ contract ContributorApiInfo is TransferEther {
     // register API with the Platform
     function registerApi(address _platform, string memory _name, string memory _param1, string memory _param2, uint _cost)
     public returns(address) {
-        testNum++;
         Platform p = Platform(_platform);
         address _address = p.createApiInfo(_name, _param1, _param2, _cost, contributor);
         contibutorApiStore[_name] = _address;
