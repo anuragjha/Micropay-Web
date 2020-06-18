@@ -379,7 +379,7 @@ export default ({ drizzle, drizzleState }) => {
             <Col>
               <div className="section">
                 <h2>API Info</h2>
-                <CheckList/>
+                <CheckList drizzle={drizzle} drizzleState={drizzleState}/>
 
                 <div>
                   <h2>Decrypt Encrypted check</h2>

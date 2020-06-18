@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react'
+import { newContextComponents } from "@drizzle/react-components";
 
 import firebase from '../firebase'
 import Button from 'react-bootstrap/Button'
+
+const { AccountData, ContractData, ContractForm } = newContextComponents;
 
 function useChecks() {
     const [checks, setChecks] = useState([])
@@ -26,7 +29,7 @@ function useChecks() {
 }
 
 
-const CheckList = () => {
+const CheckList = ({drizzle, drizzleState}) => {
     const checks = useChecks()
 
     return (
@@ -45,7 +48,11 @@ const CheckList = () => {
                     <div className="time-entry">
                         {check.toAddress} -> 
                         <code className="time"> {check.encryptedMessage}</code>
-                        <Button>Withdraw</Button>
+                        <ContractForm
+                            drizzle={drizzle}
+                            contract="ContributorApiInfo"
+                            method="withdraw"
+                        />
                     </div>
                 </li>
                 )}
