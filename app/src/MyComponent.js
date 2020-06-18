@@ -14,13 +14,9 @@ import Button from 'react-bootstrap/Button';
   import EthCrypto from 'eth-crypto';
   import Web3 from 'web3';
 
+import CheckList from './components/check-list';
+import AddCheckEntryForm from './components/add-check-entry';
 
-import firebase from './firebase';
-
-firebase.firestore().collection('times').add({
-  title: "polll purrr",
-  time_seconds: 45
-})
 
 /////// firebase
 // var database = firebase.database();
@@ -179,17 +175,17 @@ export default ({ drizzle, drizzleState }) => {
       ///////
 
       
-      (async () => {
+      // (async () => {
       
-        const channel = await connect({
-          ethProviderUrl: "http://127.0.0.1:8545",
-          signer: Wallet.createRandom().privateKey,
-          nodeUrl: "http://localhost:8080",
-        });
+      //   const channel = await connect({
+      //     ethProviderUrl: "http://127.0.0.1:8545",
+      //     signer: Wallet.createRandom().privateKey,
+      //     nodeUrl: "http://localhost:8080",
+      //   });
       
-        console.log(`Successfully connected channel with public id: ${channel.publicIdentifier}`);
+      //   console.log(`Successfully connected channel with public id: ${channel.publicIdentifier}`);
       
-      })()
+      // })()
 
       ///////
       ///////
@@ -202,8 +198,9 @@ export default ({ drizzle, drizzleState }) => {
         <Row>
         <Col md="auto">
               <div>
-                <h2>ok:</h2>
-                {}
+                
+                {/* <CheckList/>
+                <AddCheckEntryForm/> */}
               </div>
             </Col>
             <Col md="auto">
@@ -405,6 +402,8 @@ export default ({ drizzle, drizzleState }) => {
             <Col>
               <div className="section">
                 <h2>API Info</h2>
+                <CheckList/>
+                <AddCheckEntryForm/>
               </div>
             </Col>
 
@@ -434,11 +433,6 @@ export default ({ drizzle, drizzleState }) => {
                 </div>
             </Col>
 
-            <Col>
-                <div className="section">
-                  <h2>Log</h2>
-                </div>
-            </Col>
           </Row>
 
           <Row>
