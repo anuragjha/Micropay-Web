@@ -194,34 +194,11 @@ export default ({ drizzle, drizzleState }) => {
     <div className="App">
         <Container>
 
-{/* test row */}
-        <Row>
-        <Col md="auto">
-              <div>
-                
-                {/* <CheckList/>
-                <AddCheckEntryForm/> */}
-              </div>
-            </Col>
-            <Col md="auto">
-              <div>
-                {setContractAddressCheck} -> {contractAddressCheck}
-                {setAmountCheck} -> {amountCheck}
-                <Button onClick={() => {signing(contractAddressCheck, amountCheck)}}>signing</Button>
-                
-
-                {setEncryptedCheck} -> {encryptedCheck}
-                <Button onClick={() => {recovering(encryptedCheck)}}>recovering</Button>
-                <Button onClick={() => {answering()}}>answering</Button>
-              </div>
-            </Col>
-        </Row>
-
           {/* Top Row */}
           <Row>
-            <Col md="auto">
-               <div>
-                 <img src={logo} alt="drizzle-logo" />
+            <Col md ="auto">
+              <div className="logo">
+                 {/* <img src={logo} alt="drizzle-logo" /> */}
                  <h1>Micro Pay</h1>
                  <p>
                    Marketplace for APIs
@@ -271,7 +248,7 @@ export default ({ drizzle, drizzleState }) => {
               </div>
             </Col>
 
-            <Col md="auto">
+            <Col>
               <div className="section">
                 <h2>Choose Account</h2>
                 {setProfileIndex} -> {profileIndex} <br />
@@ -403,7 +380,14 @@ export default ({ drizzle, drizzleState }) => {
               <div className="section">
                 <h2>API Info</h2>
                 <CheckList/>
-                <AddCheckEntryForm/>
+
+                <div>
+                  <h2>Decrypt Encrypted check</h2>
+                  {setEncryptedCheck} -> {encryptedCheck}
+                  <Button onClick={() => {recovering(encryptedCheck)}}>recovering</Button>
+                  <Button onClick={() => {answering()}}>answering</Button>
+                </div>
+                
               </div>
             </Col>
 
@@ -430,6 +414,15 @@ export default ({ drizzle, drizzleState }) => {
                     methodArgs={[userApiStoreInput]}
                   />
                 </p>
+
+                <div>
+                  <h2>Sign Check</h2>
+                  <p>payment address {setContractAddressCheck} -> {contractAddressCheck}</p>
+                  <p>amount {setAmountCheck} -> {amountCheck}</p>
+                  <Button onClick={() => {signing(contractAddressCheck, amountCheck)}}>sign</Button>
+                </div>
+
+                  <AddCheckEntryForm/>
                 </div>
             </Col>
 
