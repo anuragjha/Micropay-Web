@@ -56,8 +56,7 @@ contract UserApiInfo is TransferEther {
     }
 
     function get(address _user, string memory _name) public view
-    returns (address Contract, uint Balance, string memory Name, uint Cost, uint RunCount, uint TotalOwed, string memory LastRESULT,
-        address OAR, address Owner, address User, address Payment) {
+    returns (address Contract, address Payment, string memory Name, string memory LastResult, uint TotalOwed,  uint Cost, uint RunCount, address Owner, address User) {
         require(user==_user, "User Not Authorized");
         if (userApiStore[_name] != address(0)) {
             ProvableInfo pi = ProvableInfo(address(uint160(address(userApiStore[_name]))));
@@ -82,6 +81,17 @@ contract UserApiInfo is TransferEther {
             UniDirectionalPayment pay = UniDirectionalPayment(address(uint160(address(pi.getPaymentAddress(_user)))));
             return pay.getContractBalance();
         }
+    }
+    
+    function getTotalOwed(address _user, string memory _name) public view  returns (uint) {
+        require(user==_user, "User Not Authorized");
+        if (userApiStore[_name] != address(0)) {
+            ProvableInfo pi = ProvableInfo(address(uint160(address(userApiStore[_name]))));
+            return pi.getTotalOwed();
+            // UniDirectionalPayment pay = UniDirectionalPayment(address(uint160(address(pi.getPaymentAddress(_user)))));
+            // return pay.getContractBalance();
+        }
+        return 0;
     }
     
     // function addPaymentBalance(address _user, string memory _name) public view  returns (uint) {

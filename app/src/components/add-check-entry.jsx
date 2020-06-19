@@ -7,6 +7,7 @@ const AddCheckEntryForm = () => {
     // const [title, setTitle] = useState('')
     // const [time, setTime] = useState('')
     const [toAddress, setToAddress] = useState('')
+    const [fromAddress, setFromAddress] = useState('')
     const [fromSignature, setFromSignature] = useState('')
     const [encryptedMessage, setEncryptedMessage] = useState('')
 
@@ -16,7 +17,8 @@ const AddCheckEntryForm = () => {
         firebase
         .firestore()
         .collection('checks')
-        .add({
+        .doc(toAddress)
+        .update({
             toAddress,
             fromSignature,
             encryptedMessage

@@ -10,8 +10,13 @@ contract TransferEther {
         return msg.sender.balance;
     }
 
-    function sendEther(address payable  _to) public payable {
-        (bool sent,) = _to.call.value(msg.value)("");
+    // function sendEther(address payable  _to) public payable {
+    //     (bool sent,) = _to.call.value(msg.value)("");
+    //     require(sent, "Failed to send Ether");
+    // }
+    
+    function sendEther(address payable  _to, uint _amount) public payable {
+        (bool sent,) = _to.call.value(_amount)("");
         require(sent, "Failed to send Ether");
     }
 

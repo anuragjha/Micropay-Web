@@ -64,11 +64,14 @@ import "./UserApiInfo.sol";
     // }
 
     function get(address _user) public view
-    returns (address Contract, uint Balance, string memory Name, uint Cost, uint RunCount, uint TotalOwed, string memory LastRESULT,
-        address OAR, address Owner, address User, address Payment) {
+    returns (address Contract, address Payment, string memory Name, string memory LastResult, uint TotalOwed,  uint Cost, uint RunCount, address Owner, address User) {
         require(user==_user, "User Not Authorized");
-        return (address(this), address(this).balance, name, cost, runCount, totalOwed, RESULT,
-        oar, owner, user, payment);
+        return (address(this), payment, name, RESULT, totalOwed, cost, runCount, owner, user );
+    }
+    
+    function getTotalOwed() public view  returns (uint) {
+        // require(user==_user, "User Not Authorized");
+        return totalOwed;
     }
 
     function getContractBalance(address _user) public view  returns (uint) {
@@ -129,7 +132,7 @@ import "./UserApiInfo.sol";
             runCount++; // Incrementing run count
             totalOwed += cost;
             // provable_query(provable_query_param1, provable_query_param2);
-            RESULT = "250.55";
+            RESULT = uint2str(now);
         // }
     }
 
@@ -137,4 +140,28 @@ import "./UserApiInfo.sol";
         require(user==_user, "User Not Authorized");
         runApi(_user);
     }
+        
+    // from : https://ethereum.stackexchange.com/questions/6591/conversion-of-uint-to-string    
+    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        while (_i != 0) {
+            bstr[k--] = byte(uint8(48 + _i % 10));
+            _i /= 10;
+        }
+        return string(bstr);
+    }
+    
+    
+    
+    
 }
