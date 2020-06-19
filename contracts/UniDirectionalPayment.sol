@@ -1,11 +1,11 @@
 pragma solidity >=0.5.17 <0.6.0;
 
-// import "@openzeppelin/contracts/math/SafeMath.sol";
-// import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-// import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol";
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/cryptography/ECDSA.sol";
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+// import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol";
+// import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/cryptography/ECDSA.sol";
+// import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/utils/ReentrancyGuard.sol";
 
 import "./TransferEther.sol";
 import "./ProvableInfo.sol";
@@ -56,6 +56,22 @@ contract UniDirectionalPayment is ReentrancyGuard, TransferEther {
             "Invalid signature"
         );
         _;
+    }
+    
+    function withdraw(address _contributor, uint _payeeBalance, bytes memory _signature)
+        public
+        nonReentrant
+        // checkSignature(_signature, _payeeBalance)
+        payable
+    {
+        emit print("in close");
+        require(_contributor == payee, "Not payee");
+        emit print("_contributor == payee");
+
+        (bool sent, ) = payee.call.value(_payeeBalance)("");
+        require(sent, "Failed to send Ether");
+        emit print("_contributor == payee");
+        
     }
 
     function close(address _contributor, uint _payeeBalance, bytes memory _signature)

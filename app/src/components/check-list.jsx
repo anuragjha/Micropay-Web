@@ -47,12 +47,23 @@ const CheckList = ({drizzle, drizzleState}) => {
                 <li key={check.id}>
                     <div className="time-entry">
                         {check.toAddress} -> 
+                        <code className="time"> {check.encryptedMessage}</code> ->
                         <code className="time"> {check.encryptedMessage}</code>
-                        <ContractForm
-                            drizzle={drizzle}
-                            contract="ContributorApiInfo"
-                            method="withdraw"
-                        />
+                        <p>withdraw:
+                            <ContractForm
+                                drizzle={drizzle}
+                                contract="ContributorApiInfo"
+                                method="withdraw"
+                            />
+                        </p>
+                        <p>close:
+                            <ContractForm
+                                drizzle={drizzle}
+                                contract="ContributorApiInfo"
+                                method="close"
+                            />
+                        </p>
+  
                     </div>
                 </li>
                 )}

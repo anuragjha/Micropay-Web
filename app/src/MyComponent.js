@@ -18,6 +18,7 @@ import CheckList from './components/check-list';
 import AddCheckEntryForm from './components/add-check-entry';
 
 
+
 /////// firebase
 // var database = firebase.database();
 // const [words, setWords] = useState([]);
@@ -51,6 +52,7 @@ export default ({ drizzle, drizzleState }) => {
      const [contractAddressCheck, setContractAddressCheck] = useInput({type: "string"});
      const [amountCheck, setAmountCheck] = useInput({type: "number"});
      const [encryptedCheck, setEncryptedCheck] = useInput({ type: "string" });
+     const [apiName, setApiName] = useState('')
 
     //  const [encryptedCheck, setEncryptedCheck] = useInput({ type: "string" });
 
@@ -61,8 +63,8 @@ export default ({ drizzle, drizzleState }) => {
      alice.privateKey = '1a4a7328a67ff70b3e74c624d3f19afe5fc2452973bf86c641173cd7fc170efc';
      alice.publicKey = EthCrypto.publicKeyByPrivateKey(alice.privateKey)
      let bob = {};
-     bob.address = '0x1Bc95B7E67E51f0Cf793ECDB54720ff91ac8409f';
-     bob.privateKey = '190c1b1fffe13e9ff8412af89c3becbc284019b8d86928d3d92b31da12ff9dcf';
+     bob.address = '0x45F4Cc5C539d29c9fcC9415F5437156d27f7fcad';
+     bob.privateKey = 'c4ad902841375e7711b56e8fb47eaa3df82ddda08f51c84e2b26a479e0a10250';
      bob.publicKey = EthCrypto.publicKeyByPrivateKey(bob.privateKey)
      
      let payload;
@@ -70,7 +72,7 @@ export default ({ drizzle, drizzleState }) => {
 
 
      function constructPaymentMessage(contractAddress, amount) {
-      return contractAddress+"___"+amount;
+      return contractAddress+"_"+amount;
     }
 
      async function signing(address, amount) {
@@ -82,7 +84,7 @@ export default ({ drizzle, drizzleState }) => {
         )//
 
         const signature = EthCrypto.sign(
-          alice.privateKey,
+          bob.privateKey,
           EthCrypto.hash.keccak256(secretMessage)
         );
         console.log("signature", signature);
@@ -97,7 +99,7 @@ export default ({ drizzle, drizzleState }) => {
             signature
         };
         const encrypted = await EthCrypto.encryptWithPublicKey(
-            bob.publicKey, // by encryping with bobs publicKey, only bob can decrypt the payload with his privateKey
+            alice.publicKey, // by encryping with bobs publicKey, only bob can decrypt the payload with his privateKey
             JSON.stringify(payload) // we have to stringify the payload before we can encrypt it
         );
         /*  { iv: 'c66fbc24cc7ef520a7...',
@@ -124,7 +126,7 @@ export default ({ drizzle, drizzleState }) => {
         const encryptedObject = EthCrypto.cipher.parse(encryptedString);
 
         const decrypted = await EthCrypto.decryptWithPrivateKey(
-            bob.privateKey,
+            alice.privateKey,
             encryptedObject
         );
         console.log("decrypted:")
@@ -152,7 +154,7 @@ export default ({ drizzle, drizzleState }) => {
       async function answering() {
         const answerMessage = 'And I am Bob Kelso';
         const answerSignature = EthCrypto.sign(
-            bob.privateKey,
+            alice.privateKey,
             EthCrypto.hash.keccak256(answerMessage)
         );
         const answerPayload = {
@@ -160,21 +162,33 @@ export default ({ drizzle, drizzleState }) => {
             signature: answerSignature
         };
 
-        const alicePublicKey = EthCrypto.recoverPublicKey(
+        const bobPublicKey = EthCrypto.recoverPublicKey(
             decryptedPayload.signature,
             EthCrypto.hash.keccak256(payload.message)
         );
 
         const encryptedAnswer = await EthCrypto.encryptWithPublicKey(
-            alicePublicKey,
+            bobPublicKey,
             JSON.stringify(answerPayload)
         );
         // now we send the encryptedAnswer to alice over the internet.. *bieb, bieb, blob*
       }
       ///////
       ///////
-
-      
+    // function addContract() {
+    //     var contractConfig = {
+    //         contractName: "0x69fb2E7BFE4662b4F9791f24d5f782c3385ce0F6",
+    //         web3Contract: new web3.eth.Contract(/* ... */)
+    //       }
+    //       events = ['print', 'printUint256']
+          
+    //       // Using an action
+    //     //   dispatch({type: 'ADD_CONTRACT', contractConfig, events})
+          
+    //       // Or using the Drizzle context object
+    //       this.context.drizzle.addContract(contractConfig, events)
+    // }
+    
       // (async () => {
       
       //   const channel = await connect({
@@ -413,6 +427,14 @@ export default ({ drizzle, drizzleState }) => {
                     method="run"
                     methodArgs={[userApiStoreInput]}
                   />
+                  {/* <strong>Runn</strong>
+                  <form onSubmit={runApi}>
+                    <div>
+                        <label>Api Name</label>
+                        <input type='text' value={apiName} onChange={e => setApiName(e.currentTarget.value)}/>
+                    </div>
+                    <button>Run Api</button>
+                </form> */}
                 </p>
 
                 <div>
@@ -422,7 +444,7 @@ export default ({ drizzle, drizzleState }) => {
                   <Button onClick={() => {signing(contractAddressCheck, amountCheck)}}>sign</Button>
                 </div>
 
-                  <AddCheckEntryForm/>
+                  <AddCheckEntryForm />
                 </div>
             </Col>
 

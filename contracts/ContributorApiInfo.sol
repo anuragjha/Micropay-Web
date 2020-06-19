@@ -51,10 +51,16 @@ contract ContributorApiInfo is TransferEther {
         }
     }
 
-    function withdraw(address _payment, uint _payeeBalance, bytes memory _signature) public payable onlyUser() {
+    function close(address _payment, uint _payeeBalance, bytes memory _signature) public payable onlyUser() {
         // require(contributor == address(msg.sender), "Not a user");
         UniDirectionalPayment udp = UniDirectionalPayment(address(uint160(address(_payment))));
         udp.close(contributor, _payeeBalance, _signature);
+    }
+    
+    function withdraw(address _payment, uint _payeeBalance, bytes memory _signature) public payable onlyUser() {
+        // require(contributor == address(msg.sender), "Not a user");
+        UniDirectionalPayment udp = UniDirectionalPayment(address(uint160(address(_payment))));
+        udp.withdraw(contributor, _payeeBalance, _signature);
     }
 
     // function addToContributorApiStore(string memory _name, address _apiInfoAddress) private onlyUser() {

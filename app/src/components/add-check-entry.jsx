@@ -7,6 +7,7 @@ const AddCheckEntryForm = () => {
     // const [title, setTitle] = useState('')
     // const [time, setTime] = useState('')
     const [toAddress, setToAddress] = useState('')
+    const [fromSignature, setFromSignature] = useState('')
     const [encryptedMessage, setEncryptedMessage] = useState('')
 
     function onSubmit(e) {
@@ -17,10 +18,12 @@ const AddCheckEntryForm = () => {
         .collection('checks')
         .add({
             toAddress,
+            fromSignature,
             encryptedMessage
         })
         .then(() => {
             setToAddress('')
+            setFromSignature('')
             setEncryptedMessage('')
         })
     }
@@ -31,6 +34,10 @@ const AddCheckEntryForm = () => {
             <div>
                 <label>To Address</label>
                 <input type='text' value={toAddress} onChange={e => setToAddress(e.currentTarget.value)}/>
+            </div>
+            <div>
+                <label>From Signature</label>
+                <input type='text' value={fromSignature} onChange={e => setFromSignature(e.currentTarget.value)} />
             </div>
             <div>
                 <label>Encrypted Message</label>

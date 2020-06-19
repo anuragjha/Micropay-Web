@@ -19,7 +19,7 @@ module.exports = function(deployer) {
   deployer.deploy(Platform, "0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475");
   
   deployer.deploy(ContributorApiInfo, "0x12b94d2015c0A563150905eeb0828e91cd40eD9E");
-  deployer.deploy(UserApiInfo, "0x12b94d2015c0A563150905eeb0828e91cd40eD9E");
+  deployer.deploy(UserApiInfo, "0x45F4Cc5C539d29c9fcC9415F5437156d27f7fcad");
 
 
   // deployer.deploy(ApiInfo, "ok", "URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price",
