@@ -18,7 +18,7 @@ import UniDirectionalPayment from "./contracts/UniDirectionalPayment.json";
 const options = {
   web3: {
     block: false,
-    customProvider: new Web3("ws://127.0.0.1:8545"),
+    customProvider: new Web3("ws://127.0.0.1:7545"),
   },
   contracts: [Storage, TransferEther, Platform, ContributorApiInfo, UserApiInfo, ApiInfo, ProvableInfo, UniDirectionalPayment],
   events: {
