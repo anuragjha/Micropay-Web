@@ -42,7 +42,7 @@ contract UserApiInfo is TransferEther {
     function createProvableInfoFor(address _platform, address _user, string memory _name, uint _expiresAt) public payable returns (address) {
         require(user==_user, "User Not Authorized");
         Platform p = Platform(_platform);
-        address _provableInfoAddress = p.createProvableInfo(user, _name, _expiresAt);
+        address _provableInfoAddress = p.createProvableInfo(contractAddress, user, _name, _expiresAt);
         
         ProvableInfo pi = ProvableInfo(address(uint160(address(_provableInfoAddress))));
         address payable pay = address(uint160(address(pi.getPaymentAddress(_user))));
@@ -113,6 +113,10 @@ contract UserApiInfo is TransferEther {
             
             delete userApiStore[_name];
         }
+    }
+    
+    function deleteFromUserApiStore(string memory _name) public {
+        delete userApiStore[_name];
     }
 
     function run( string memory _name) public onlyUser() {

@@ -46,9 +46,9 @@ contract ApiInfo is TransferEther {
         userMap[_user] = _provableApi;
     }
     
-    function createNewProvableInfo(address _user, address _payContractAddress) public returns (address){
+    function createNewProvableInfo(address _userApiInfo, address _user, address _payContractAddress) public returns (address){
         // string memory _name, string memory _param1, string memory _param2, uint _cost, address _OAR, address _owner, address _user
-        ProvableInfo provableApi = (new ProvableInfo)(name, provable_query_param1, provable_query_param2, cost, oar, owner, _user, _payContractAddress);
+        ProvableInfo provableApi = (new ProvableInfo)(name, provable_query_param1, provable_query_param2, cost, oar, owner, _userApiInfo, _user, _payContractAddress);
         
         addToUserMap(_user, address(provableApi));
          

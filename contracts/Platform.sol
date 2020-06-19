@@ -45,7 +45,7 @@ contract Platform {
     }
 
     // receive request from UserApiInfo and create ProvableInfo
-    function createProvableInfo(address _user, string memory _name, uint _expiresAt)
+    function createProvableInfo(address _userApiInfo, address _user, string memory _name, uint _expiresAt)
     public
     payable
     returns (address)
@@ -58,7 +58,11 @@ contract Platform {
         address payable payablePayee = address(uint160(apiInfo.owner()));
         address payContractAddress = createNewPaymentChannel(payablePayer, payablePayee, _expiresAt);
         
-        address provableInfoAddress = apiInfo.createNewProvableInfo(_user, payContractAddress);
+        address provableInfoAddress = apiInfo.createNewProvableInfo(_userApiInfo, _user, payContractAddress);
+        
+        UniDirectionalPayment payContract = UniDirectionalPayment(address(uint160(address(payContractAddress))));
+        payContract.setProvableAddress(provableInfoAddress);
+        
         return provableInfoAddress;
                             
     }
