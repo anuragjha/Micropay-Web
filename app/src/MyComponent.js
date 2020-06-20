@@ -3,12 +3,14 @@ import Alert from 'react-bootstrap/Alert';
 import { newContextComponents } from "@drizzle/react-components";
 import logo from "./logo.png";
 
+import { useWeb3 } from '@openzeppelin/network/react';
+
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
-  import { connect } from "@connext/client";
+  // import { connect } from "@connext/client";
   import { Wallet } from "ethers";
 
   import EthCrypto from 'eth-crypto';
@@ -20,6 +22,7 @@ import AddCheckEntryForm from './components/add-check-entry';
 
 
 /////// firebase
+import firebase from './firebase'
 // var database = firebase.database();
 // const [words, setWords] = useState([]);
 // const [advancedWords, setAdvancedWords] = useState([]);
@@ -55,6 +58,9 @@ export default ({ drizzle, drizzleState }) => {
      const [apiName, setApiName] = useState('')
 
     //  const [encryptedCheck, setEncryptedCheck] = useInput({ type: "string" });
+    const [decryptedCheckFrom, setCheckFrom] = useState('')
+    const [decryptedCheckPayment, setDecryptedCheckPayment] = useState('')
+    const [decryptedCheckAmount, setDecryptedCheckAmount] = useState('')
 
      const EthCrypto = require('eth-crypto');
      let x;
@@ -119,6 +125,8 @@ export default ({ drizzle, drizzleState }) => {
         console.log(x)
         
         // 
+        sendCheck(alice.address, bob.address, signature, encryptedString)
+
       }
 
       async function recovering(encryptedString) {
@@ -149,6 +157,14 @@ export default ({ drizzle, drizzleState }) => {
             decryptedPayload.message
         );
         // > 'Got message from 0x19C24B2d99FB91C5...: "My name is Satoshi Buterin" Buterin'
+
+          setCheckFrom(senderAddress)
+          var params = (decryptedPayload.message).split("_")
+          if (params.length == 2) {
+              setDecryptedCheckPayment(params[0])
+              setDecryptedCheckAmount(params[1])
+          }
+
       }
 
       async function answering() {
@@ -189,6 +205,26 @@ export default ({ drizzle, drizzleState }) => {
     //       this.context.drizzle.addContract(contractConfig, events)
     // }
     
+    function sendCheck(toAddress, fromAddress, fromSignature, encryptedMessage) {
+      // e.preventDefault();
+
+      firebase
+      .firestore()
+      .collection('checks')
+      .add({
+          toAddress,
+          fromAddress,
+          fromSignature,
+          encryptedMessage
+      })
+      // .then(() => {
+      //     setToAddress('')
+      //     setFromSignature('')
+      //     setEncryptedMessage('')
+      // })
+  }
+
+
       // (async () => {
       
       //   const channel = await connect({
@@ -220,9 +256,13 @@ export default ({ drizzle, drizzleState }) => {
                </div>
             </Col>
 
+            <Col md="auto">
+            </Col>
+
             <Col> 
               <div className="section">
                 <h2>Platform</h2>
+                <h4>
                 <p>
                   <ContractData
                     drizzle={drizzle}
@@ -231,16 +271,19 @@ export default ({ drizzle, drizzleState }) => {
                     method="platform"
                   />
                 </p>
-                
-                <h2>ApiStore</h2>
-                <p>Count: 
-                  <ContractData
+                </h4>
+                <br/>
+                <p>ApiStore ( 
+                <ContractData
                     drizzle={drizzle}
                     drizzleState={drizzleState}
                     contract="Platform"
                     method="apiStoreCount"
-                  />
+                  />)
                 </p>
+                {/* <p>Count: 
+
+                </p> */}
                 <p>
                   {setApiNameInput} -> {apiNameInput}<br/>
                   <ContractData
@@ -252,16 +295,16 @@ export default ({ drizzle, drizzleState }) => {
                   />
                 </p>
               
-                <h2>Create API Info</h2>
+                {/* <h2>Create API Info</h2>
                 <ContractForm
                   drizzle={drizzle}
                   contract="Platform"
                   method="createApiInfo"
-                />
+                /> */}
               
               </div>
             </Col>
-
+{/* 
             <Col>
               <div className="section">
                 <h2>Choose Account</h2>
@@ -275,14 +318,22 @@ export default ({ drizzle, drizzleState }) => {
                   precision={3}
                 />
               </div>
-            </Col>
+            </Col> */}
           </Row>
 
           {/* 1st Row */}
           <Row>
             <Col>
               <div className="section">
-                <h2>Registration</h2>
+                <h1><strong>Contributor -> Alice</strong></h1>
+                <AccountData
+                  drizzle={drizzle}
+                  drizzleState={drizzleState}
+                  accountIndex={0}
+                  units="ether"
+                  precision={3}
+                />
+                <h2>Contributor Details</h2>
                 <p>
                   <strong>Contract Address: </strong>
                   <ContractData
@@ -309,6 +360,7 @@ export default ({ drizzle, drizzleState }) => {
                   method="registerApi"
                   />
                 </p>
+                
                 <p>
                   <strong>ContibutorApiStore: </strong>
                   {setContibutorApiStoreInput} -> {contibutorApiStoreInput} <br />
@@ -327,7 +379,7 @@ export default ({ drizzle, drizzleState }) => {
                     drizzleState={drizzleState}
                     contract="ContributorApiInfo"
                     method="get"
-                    methodArgs={[drizzleState.accounts[0], contibutorApiStoreInput]}
+                    methodArgs={[alice.address, contibutorApiStoreInput]}
                   />
                 </p>
               </div>
@@ -335,7 +387,26 @@ export default ({ drizzle, drizzleState }) => {
 
             <Col>
                 <div className="section">
-                  <h2>Use API</h2>
+                <h1><strong>User -> Bob</strong></h1>
+                <AccountData
+                  drizzle={drizzle}
+                  drizzleState={drizzleState}
+                  accountIndex={2}
+                  units="ether"
+                  precision={3}
+                />
+                  {/* <h3>Send Ether</h3>
+                  <p>
+                    <strong>To Address: </strong>
+                    <ContractForm
+                      drizzle={drizzle}
+                      drizzleState={drizzleState}
+                      contract="TransferEther"
+                      method="sendEther"
+                      // methodArgs={2, }
+                    />
+                  </p> */}
+                  <h3>User Details</h3>
                   <p>
                     <strong>Contract Address: </strong>
                     <ContractData
@@ -362,6 +433,7 @@ export default ({ drizzle, drizzleState }) => {
                   method="createProvableInfoFor"
                   />
                 </p>
+                <br/>
                 <p>
                   <strong>UserApiStore: </strong>
                   {setUserApiStoreInput} -> {userApiStoreInput} <br />
@@ -380,7 +452,7 @@ export default ({ drizzle, drizzleState }) => {
                     drizzleState={drizzleState}
                     contract="UserApiInfo"
                     method="get"
-                    methodArgs={[drizzleState.accounts[0], userApiStoreInput]}
+                    methodArgs={[bob.address, userApiStoreInput]}
                   />
                 </p>
                 </div>
@@ -392,34 +464,55 @@ export default ({ drizzle, drizzleState }) => {
           <Row>
             <Col>
               <div className="section">
-                <h2>API Info</h2>
-                <CheckList drizzle={drizzle} drizzleState={drizzleState}/>
-
+              <h1><strong>Contributor -> Alice</strong></h1>
+                <AccountData
+                  drizzle={drizzle}
+                  drizzleState={drizzleState}
+                  accountIndex={0}
+                  units="ether"
+                  precision={3}
+                />
+                <h2>Account Details</h2> <br/>
+                <h3>Withdraw</h3>
+                <p>
+                    <ContractForm
+                        drizzle={drizzle}
+                        contract="ContributorApiInfo"
+                        method="close"
+                    />
+                </p>
+                <br/>
                 <div>
-                  <h2>Decrypt Encrypted check</h2>
-                  {setEncryptedCheck} -> {encryptedCheck}
-                  <Button onClick={() => {recovering(encryptedCheck)}}>recovering</Button>
-                  <Button onClick={() => {answering()}}>answering</Button>
+                  <h3>Decrypt Encrypted check</h3>
+                  {setEncryptedCheck} <code>     </code>
+                   {/* -> {encryptedCheck} */}
+                  <Button onClick={() => {recovering(encryptedCheck)}}>recover</Button>
+                  <h6>From -> {decryptedCheckFrom}</h6>
+                  <h6>Payment Address -> {decryptedCheckPayment}</h6>
+                  <h6>Payment Amount -> {decryptedCheckAmount}</h6>
+                  
+                  {/* <Button onClick={() => {answering()}}>answer</Button> */}
                 </div>
+                <br/>
+                
+
                 
               </div>
             </Col>
 
             <Col>
                 <div className="section">
-                  <h2>Use API</h2>
+                <h1><strong>User -> Bob</strong></h1>
+                <AccountData
+                  drizzle={drizzle}
+                  drizzleState={drizzleState}
+                  accountIndex={2}
+                  units="ether"
+                  precision={3}
+                />
+                  <h2>User Board</h2> <br/>
                   <p>
-                  <strong>Result: </strong>
-                  <ContractData
-                    drizzle={drizzle}
-                    drizzleState={drizzleState}
-                    contract="UserApiInfo"
-                    method="getResult"
-                    methodArgs={[drizzleState.accounts[0], userApiStoreInput]}
-                  />
-                </p>
-                <p>
-                  <strong>Run: </strong>
+                  <h3><strong>Run </strong></h3>
                   <ContractForm
                     drizzle={drizzle}
                     drizzleState={drizzleState}
@@ -436,22 +529,63 @@ export default ({ drizzle, drizzleState }) => {
                     <button>Run Api</button>
                 </form> */}
                 </p>
+                  <p>
+                  <h3><strong>Result =>   </strong>
+                  <ContractData
+                    drizzle={drizzle}
+                    drizzleState={drizzleState}
+                    contract="UserApiInfo"
+                    method="getResult"
+                    methodArgs={[drizzleState.accounts[2], userApiStoreInput]}
+                  />
+                  </h3>
+                </p>
 
+                <br/>
                 <div>
-                  <h2>Sign Check</h2>
-                  <p>payment address {setContractAddressCheck} -> {contractAddressCheck}</p>
-                  <p>amount {setAmountCheck} -> {amountCheck}</p>
+                  <h2>Sign, Encrypt and Send Check</h2>
+ 
+                  {/* <p>Payment address {setContractAddressCheck} -> {contractAddressCheck}</p>
+                  <p>Payment amount {setAmountCheck} -> {amountCheck}</p> */}
+                  <p>Deposit is ->                 
+                    <ContractData
+                    drizzle={drizzle}
+                    drizzleState={drizzleState}
+                    contract="UserApiInfo"
+                    method="getPaymentBalance"
+                    methodArgs={[bob.address, userApiStoreInput]}
+                  />
+                  </p>
+                  <p>Total owed is ->
+                    <ContractData
+                    drizzle={drizzle}
+                    drizzleState={drizzleState}
+                    contract="UserApiInfo"
+                    method="getTotalOwed"
+                    methodArgs={[bob.address, userApiStoreInput]}
+                  />
+                  </p>
+                  <p>Payment address -> {setContractAddressCheck}</p>
+                  <p>Payment amount -> {setAmountCheck}</p>
                   <Button onClick={() => {signing(contractAddressCheck, amountCheck)}}>sign</Button>
                 </div>
 
-                  <AddCheckEntryForm />
+                  {/* <AddCheckEntryForm /> */}
                 </div>
             </Col>
 
           </Row>
 
           <Row>
-            <Col>
+                <Col>
+              <div className="sectionRow">
+                <h2>Off Chain Messages</h2>
+                <CheckList drizzle={drizzle} drizzleState={drizzleState}/>
+
+              </div>
+              </Col>
+            
+            {/* <Col>
               <div className="section">
                 <h2>Storage</h2>
                 <p>
@@ -472,9 +606,9 @@ export default ({ drizzle, drizzleState }) => {
                     />
                 </p>
               </div>
-            </Col>
+            </Col> */}
 
-            <Col>
+            {/* <Col>
                 <div className="section">
                   <h2>Transfer Ether</h2>
                   <p>
@@ -509,16 +643,7 @@ export default ({ drizzle, drizzleState }) => {
             <Col>
                 <div className="section">
                   <h2>ProvableInfo</h2>
-                  {/* <p>
-                    <strong>getBalance(): </strong>
-                    <ContractData
-                      drizzle={drizzle}
-                      drizzleState={drizzleState}
-                      contract="ProvableInfo"
-                      method="get"
-                      methodArgs={["0x45F4Cc5C539d29c9fcC9415F5437156d27f7fcad"]}
-                    />{" "}
-                  </p> */}
+
                   <p>
                     <strong>getBalance(): </strong>
                         <button onClick={sayHello}>
@@ -527,125 +652,9 @@ export default ({ drizzle, drizzleState }) => {
                   </p>
                   <Button variant="primary" onClick={sayHello}>Primary</Button>{' '}
                 </div>
-            </Col>
+            </Col> */}
           </Row>
         </Container>
-
-      {/*<div className="section">
-        <h2>SimpleStorage</h2>
-        <p>
-          This shows a simple ContractData component with no arguments, along
-          with a form to set its value.
-        </p>
-        <p>
-          <strong>Stored Value: </strong>
-          <ContractData
-            drizzle={drizzle}
-            drizzleState={drizzleState}
-            contract="SimpleStorage"
-            method="storedData"
-          />
-        </p>
-        <ContractForm drizzle={drizzle} contract="SimpleStorage" method="set" />
-      </div>*/}
-
-      {/* <div className="section">
-        <h2>TutorialToken</h2>
-        <p>
-          Here we have a form with custom, friendly labels. Also note the token
-          symbol will not display a loading indicator. We've suppressed it with
-          the <code>hideIndicator</code> prop because we know this variable is
-          constant.
-        </p>
-        <p>
-          <strong>Total Supply: </strong>
-          <ContractData
-            drizzle={drizzle}
-            drizzleState={drizzleState}
-            contract="TutorialToken"
-            method="totalSupply"
-            methodArgs={[{ from: drizzleState.accounts[0] }]}
-          />{" "}
-          <ContractData
-            drizzle={drizzle}
-            drizzleState={drizzleState}
-            contract="TutorialToken"
-            method="symbol"
-            hideIndicator
-          />
-        </p>
-        <p>
-          <strong>My Balance: </strong>
-          <ContractData
-            drizzle={drizzle}
-            drizzleState={drizzleState}
-            contract="TutorialToken"
-            method="balanceOf"
-            methodArgs={[drizzleState.accounts[0]]}
-          />
-        </p>
-        <h3>Send Tokens</h3>
-        <ContractForm
-          drizzle={drizzle}
-          contract="TutorialToken"
-          method="transfer"
-          labels={["To Address", "Amount to Send"]}
-        />
-      </div> */}
-
-      {/*<div className="section">
-        <h2>ComplexStorage</h2>
-        <p>
-          Finally this contract shows data types with additional considerations.
-          Note in the code the strings below are converted from bytes to UTF-8
-          strings and the device data struct is iterated as a list.
-        </p>
-        <p>
-          <strong>String 1: </strong>
-          <ContractData
-            drizzle={drizzle}
-            drizzleState={drizzleState}
-            contract="ComplexStorage"
-            method="string1"
-            toUtf8
-          />
-        </p>
-        <p>
-          <strong>String 2: </strong>
-          <ContractData
-            drizzle={drizzle}
-            drizzleState={drizzleState}
-            contract="ComplexStorage"
-            method="string2"
-            toUtf8
-          />
-        </p>
-        <strong>Single Device Data: </strong>
-        <ContractData
-          drizzle={drizzle}
-          drizzleState={drizzleState}
-          contract="ComplexStorage"
-          method="singleDD"
-        />
-      </div>*/}
-
-      {/*<div className="section">
-        <h2>Sending Ether</h2>
-        <p>
-          This shows a simple ContractData component with no arguments, along
-          with a form to set its value.
-        </p>
-        <p>
-          <strong>Stored Value: </strong>
-          <ContractData
-            drizzle={drizzle}
-            drizzleState={drizzleState}
-            contract="SimpleStorage"
-            method="storedData"
-          />
-        </p>
-        <ContractForm drizzle={drizzle} contract="SendEther" method="sendViaCall" />
-      </div>*/}
 
     </div>
   );
