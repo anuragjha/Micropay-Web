@@ -6,6 +6,7 @@
     "@drizzle/react-components": "^1.5.1",
     "@drizzle/react-plugin": "^1.5.1",
     "@drizzle/store": "^1.5.1",
+    "@openzeppelin/network": "^0.4.2",
     "bootstrap": "^4.5.0",
     "eth-crypto": "^1.6.0",
     "firebase": "^7.15.1",
