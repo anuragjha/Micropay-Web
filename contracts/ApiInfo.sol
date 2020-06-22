@@ -1,4 +1,4 @@
-pragma solidity >=0.5.17 <0.6.0;
+pragma solidity >=0.5.16 <0.6.0;
 
 import "./ProvableInfo.sol";
 import "./TransferEther.sol";

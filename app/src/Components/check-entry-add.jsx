@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import firebase from '../firebase'
 
-const AddCheckEntryForm = () => {
+const CheckEntryAdd = () => {
 
     // const [title, setTitle] = useState('')
     // const [time, setTime] = useState('')
@@ -50,4 +50,4 @@ const AddCheckEntryForm = () => {
     )
 }
 
-export default AddCheckEntryForm
+export default CheckEntryAdd

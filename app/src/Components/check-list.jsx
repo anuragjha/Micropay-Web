@@ -50,36 +50,38 @@ function useChecks() {
         
 
     return (
-        <div>
-            <h3>Check List</h3>
+        <div className="section">
+            <h2>Off-chain messages: Check List</h2> 
+            <br />
             <div>
                 {/* <label> Sort By:</label>{' '}
                 <select>
                     <option>Time (fastest first)</option>
                     <option>Time (slowest first)</option>
                 </select> */}
-            </div>
-            <ol>
-                {checks.map((check) =>
-                <li key={check.id}>
-                    <div className="time-entry">
-                        {/* {check.toAddress} ->  */}
-                        <p className="noMargin">From -> <code className="time"> {check.fromAddress}</code></p>
-                        <p className="noMargin">Signature  -> <code className="time"> {check.fromSignature}</code></p>
-                        <p className="noMargin">Encrypted Message -> <code className="time"> {check.encryptedMessage}</code></p>
-                        <p></p>
-                        {/* <p>withdraw:
-                            <ContractForm
-                                drizzle={drizzle}
-                                contract="ContributorApiInfo"
-                                method="withdraw"
-                            />
-                        </p> */}
-                    </div>
-                </li>
-                )}
+            
+                <ol>
+                    {checks.map((check) =>
+                    <li key={check.id}>
+                        <div className="time-entry">
+                            {/* {check.toAddress} ->  */}
+                            <p className="noMargin">From -> <code className="time"> {check.fromAddress}</code></p>
+                            <p className="noMargin">Signature  -> <code className="time"> {check.fromSignature}</code></p>
+                            <p className="noMargin">Encrypted Message -> <code className="time"> {check.encryptedMessage}</code></p>
+                            <p></p>
+                            {/* <p>withdraw:
+                                <ContractForm
+                                    drizzle={drizzle}
+                                    contract="ContributorApiInfo"
+                                    method="withdraw"
+                                />
+                            </p> */}
+                        </div>
+                    </li>
+                    )}
 
-            </ol>
+                </ol>
+            </div>
         </div>
     )
 

@@ -1,7 +1,6 @@
-pragma solidity >=0.5.17 <0.6.0;
+pragma solidity >=0.5.16 <0.6.0;
 
 // import "github.com/provable-things/ethereum-api/provableAPI_0.5.sol";
-// import "./provableAPI_0.5.sol"
 import "./TransferEther.sol";
 import "./UniDirectionalPayment.sol";
 import "./UserApiInfo.sol";

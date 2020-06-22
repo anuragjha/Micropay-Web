@@ -12,19 +12,6 @@
   word-wrap:break-word;
 }
 
-.sectionRow {
-  text-align: left;
-  max-width: 100%;
-  margin: 4rem auto auto;
-  padding: 5%;
-  background-color: rgba(249,249,249,1);
-  word-wrap:break-word;
-}
-
-.noMargin {
-  margin: 0px;
-}
-
 .logo {
   text-align: left;
   max-width: 720px;

@@ -1,7 +1,7 @@
-pragma solidity >=0.5.17 <0.6.0;
+pragma solidity >=0.5.16 <0.6.0;
 
 contract Storage {
-    //    event StorageSet(string _message);
+    event StorageSet(string _message);
 
     uint256 public uintData;
     string public stringData;
@@ -17,12 +17,12 @@ contract Storage {
     function setUintData(uint256 x) public {
         uintData = x;
 
-        //        emit StorageSet("Data stored successfully!");
+        emit StorageSet("Data stored successfully!");
     }
 
     function setStringData(string memory x) public {
         stringData = x;
 
-        //        emit StorageSet("Data stored successfully!");
+        emit StorageSet("Data stored successfully!");
     }
 }
