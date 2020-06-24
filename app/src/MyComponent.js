@@ -67,7 +67,6 @@ export default ({ drizzle, drizzleState }) => {
 
           {/* User Run and Payment section - User API Info solidity */}
           <Col>
-            {/* //todo : here to do here - add signature */}
             <UserProfile drizzle={drizzle} drizzleState={drizzleState}/>
             <UserApiInfoRun drizzle={drizzle} drizzleState={drizzleState} />
             <UserSign />
@@ -78,37 +77,6 @@ export default ({ drizzle, drizzleState }) => {
         <Row>
           <Col>
             <CheckList drizzle={drizzle} drizzleState={drizzleState} />
-          </Col>
-        </Row>
-
-        {/* row n */}
-        <Row>
-          <Col>
-      <div>
-        <img src={logo} alt="drizzle-logo" />
-        <h1>Drizzle Examples</h1>
-        <p>
-          Examples of how to get started with Drizzle in various situations.
-        </p>
-        <CheckEntryAdd />
-      </div>
-
-      <div className="section">
-        <h2>Active Account</h2>
-        <AccountData
-          drizzle={drizzle}
-          drizzleState={drizzleState}
-          accountIndex={0}
-          units="ether"
-          precision={3}
-        />
-      </div>
-
-      <SimpleStorage drizzle={drizzle} drizzleState={drizzleState}/>
-      </Col>
-
-          <Col>
-            <Storage drizzle={drizzle} drizzleState={drizzleState}/>
           </Col>
         </Row>
 
