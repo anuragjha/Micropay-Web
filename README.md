@@ -28,10 +28,12 @@ Contributor sees the messages in realtime. They can verify the messages and subm
 
 ## Contracts
 
-Contracts enabling API distribution. During registration API Information contract is created. And when the API is requested by the user then a User specific contract and a Payment contract is created for the request
+Contracts enabling API distribution. During registration API Information contract is created. And when the API is requested by the user then a User specific contract and a Payment contract is created for the request.
+
 ![GitHub Logo](/docs/step1.png)
 
 Contributor is subscribed to Off chain storage. To close the withdraw channel and get payed, Contributor of the API can send signature for the message and message content (Payment contract address and Payment value) to the Payment contract. If the information provided is correct Tokens owed is sent to the Contributor and rest is sent back to the user.
+
 ![GitHub Logo](/docs/step2.png)
 
 
