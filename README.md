@@ -1,6 +1,4 @@
-# Micropay
-
-Micropayment platform for using APIs.
+![GitHub Logo](/docs/cover.png)
 
 Micropay is a platform to consume and pay for API's in a simple way.
 
